@@ -16,6 +16,15 @@
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Pretendard-700.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Pretendard-800.woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/shell.css">
+<script>
+/* ?print=compact — 통합 PDF 용 축약 인쇄 모드.
+   통합본 1면이 Figma 이력서(경력·학력·대외활동·레퍼런스를 모두 담은 1페이지 CV)라,
+   같은 섹션을 뒤에서 반복하면 앞 9페이지 안에 같은 내용이 두 번 나온다.
+   이 플래그가 있을 때만 그 네 섹션을 뺀다 — 일반 Ctrl+P 인쇄에는 영향이 없다. */
+if (location.search.indexOf('print=compact') > -1) {
+  document.documentElement.setAttribute('data-print', 'compact');
+}
+</script>
 <style>
 /* ═══════════════════════════════════════════════════════════════════════
    커버 — 개발자 프로필
@@ -492,6 +501,18 @@ a{color:inherit}
   .stance p{font-size:.9rem}
   .spec dd span{font-size:.72rem; padding:3px 8px}
 
+  /* ── 축약 모드: 이력서 CV 와 겹치는 섹션 제거 ──
+     히어로(사진·이름·연락처)는 남긴다. 중복 "섹션"이 아니라 이 구간의 표제이고,
+     일부만 떼어 봐도 연락처가 붙어 있는 편이 낫다. */
+  html[data-print="compact"] #experience,
+  html[data-print="compact"] #activities,
+  html[data-print="compact"] #reference .sec-head,
+  html[data-print="compact"] #reference .rows,
+  html[data-print="compact"] #reference .cta{display:none}
+  /* 남기는 것은 출처 고지문 하나 — 본문 수치 전체의 근거를 밝히는 문장이다. */
+  html[data-print="compact"] #reference{padding-block:0 22px}
+  html[data-print="compact"] #reference .note{margin-top:0}
+
   /* 페이지 경계에서 쪼개지면 안 되는 것들 */
   .work,.edu,.method article,.row,.spec > div,.stance{break-inside:avoid}
   .vibe,.band{break-before:auto}
@@ -593,7 +614,7 @@ a{color:inherit}
     <div class="hero-cta">
       <a class="btn btn--solid" href="#work">프로젝트 보기</a>
       <a class="btn btn--ghost" href="mailto:jihono55@gmail.com">이메일</a>
-      <a class="btn btn--ghost" href="pdf/portfolio-full.pdf" target="_blank" rel="noopener">통합 PDF · 39p</a>
+      <a class="btn btn--ghost" href="pdf/portfolio-full.pdf" target="_blank" rel="noopener">통합 PDF · 45p</a>
     </div>
   </div>
 </header>
