@@ -1,0 +1,182 @@
+@charset "utf-8";
+/* ═══════════════════════════════════════════════════════════════════════
+   강지호 — 통합 포트폴리오 셸 (shell.css)
+
+   이 파일은 5개 페이지가 공유하는 "액자"다. 각 페이지의 본문 CSS와
+   충돌하지 않는 것이 최우선 제약이므로 다음 두 가지만 전역에 선언한다.
+
+     1) @font-face      — 폰트는 등록 메커니즘이라 충돌하지 않는다
+     2) :root 커스텀 프로퍼티 (--pf-* 접두)
+
+   그 외 모든 선택자는 `.pf-` 접두를 붙인다. 페이지들이 .nav / .hero /
+   .card / .chip 같은 일반 클래스명을 이미 점유하고 있기 때문이다.
+
+   색 아이덴티티는 이력서(CV 2026)에서 실측 추출한 값이다.
+     ink #111311 · cream #FBF9F6 · line #E4DFD6 · lime #CDFF4F
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── FONT — Pretendard 통합 서브셋 ───────────────────────────────────────
+   4개 굵기를 동일한 코드포인트 집합(3,735자)으로 서브셋했다.
+   굵기별 커버리지가 다르면 특정 글자만 fallback 폰트로 튀기 때문이다.
+   400/600/700 은 Pretendard OTF 원본에서, 800 은 기존 ExtraBold 서브셋 승계.
+   원본 OTF 4.6MB + base64 임베드 1.0MB → 통합 0.93MB
+   ──────────────────────────────────────────────────────────────────────── */
+@font-face{
+  font-family:'Pretendard'; font-style:normal; font-weight:400; font-display:swap;
+  src:url('../fonts/Pretendard-400.woff2') format('woff2');
+}
+@font-face{
+  font-family:'Pretendard'; font-style:normal; font-weight:600; font-display:swap;
+  src:url('../fonts/Pretendard-600.woff2') format('woff2');
+}
+@font-face{
+  font-family:'Pretendard'; font-style:normal; font-weight:700; font-display:swap;
+  src:url('../fonts/Pretendard-700.woff2') format('woff2');
+}
+@font-face{
+  font-family:'Pretendard'; font-style:normal; font-weight:800; font-display:swap;
+  src:url('../fonts/Pretendard-800.woff2') format('woff2');
+}
+
+:root{
+  /* 통합 폰트 스택 — 5개 페이지가 전부 이 두 변수만 참조한다 */
+  --pf-sans:'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+            'Malgun Gothic', '맑은 고딕', 'Segoe UI', system-ui, sans-serif;
+  --pf-mono:'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Cascadia Mono',
+            Consolas, 'D2Coding', monospace;
+
+  /* 포트폴리오 크롬 팔레트 — 이력서 실측값 */
+  --pf-ink:#111311;
+  --pf-ink-2:#1A1D1A;
+  --pf-cream:#FBF9F6;
+  --pf-line:#E4DFD6;
+  --pf-lime:#CDFF4F;
+  --pf-on-ink:rgba(251,249,246,.96);
+  --pf-on-ink-2:rgba(251,249,246,.58);
+  --pf-on-ink-line:rgba(251,249,246,.14);
+
+  --pf-nav-h:56px;
+}
+
+/* 셸 네비가 sticky 이므로 앵커 점프 시 제목이 가려지지 않게 한다.
+   어떤 페이지도 scroll-padding 을 선언하지 않으므로 충돌 없음. */
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+html{scroll-padding-top:calc(var(--pf-nav-h) + 16px)}
+
+/* ═══════════════ 상단 네비게이션 ═══════════════ */
+.pf-nav{
+  position:sticky; top:0; z-index:900;
+  background:var(--pf-ink);
+  color:var(--pf-on-ink);
+  font-family:var(--pf-sans);
+  border-bottom:1px solid var(--pf-on-ink-line);
+}
+.pf-nav *{box-sizing:border-box}
+.pf-nav__in{
+  max-width:1200px; margin-inline:auto;
+  padding-inline:clamp(16px,4vw,40px);
+  min-height:var(--pf-nav-h);
+  display:flex; align-items:center; gap:clamp(12px,2.5vw,28px);
+}
+
+.pf-nav__brand{
+  display:inline-flex; align-items:center; gap:9px; flex:none;
+  color:var(--pf-on-ink); text-decoration:none; border:0;
+  font-size:14px; font-weight:600; letter-spacing:-.01em; white-space:nowrap;
+}
+.pf-nav__brand b{font-weight:700}
+.pf-nav__brand:hover{color:#fff}
+.pf-nav__mark{
+  inline-size:9px; block-size:9px; flex:none; border-radius:2px;
+  background:var(--pf-lime);
+}
+
+/* 프로젝트 전환기 — 모바일에서는 가로 스크롤로 전부 접근 가능하게 둔다.
+   숨기면 다른 프로젝트로 갈 방법이 사라지므로 display:none 을 쓰지 않는다.
+
+   min-inline-size:0 이 없으면 overflow-x:auto 를 걸어도 소용없다.
+   flex 아이템의 min-width 기본값은 auto 라 콘텐츠 폭 아래로 줄지 않고
+   컨테이너를 밀어낸다 (360px 에서 문서 전체가 8px 가로 스크롤됐다). */
+.pf-nav__list{
+  display:flex; align-items:center; gap:2px;
+  margin:0; padding:0; list-style:none;
+  min-inline-size:0;
+  overflow-x:auto; overscroll-behavior-x:contain;
+  scrollbar-width:none; -ms-overflow-style:none;
+  margin-inline-start:auto;
+  /* 오른쪽 끝을 흐리게 해 더 스크롤할 게 있음을 알린다 */
+  -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 18px),transparent);
+          mask-image:linear-gradient(to right,#000 calc(100% - 18px),transparent);
+}
+@media (min-width:900px){
+  .pf-nav__list{-webkit-mask-image:none; mask-image:none}
+}
+.pf-nav__list::-webkit-scrollbar{display:none}
+.pf-nav__list a{
+  display:inline-flex; align-items:center; min-block-size:34px;
+  padding:0 11px; border-radius:7px; border:0;
+  color:var(--pf-on-ink-2); text-decoration:none; white-space:nowrap;
+  font-size:13.5px; font-weight:600; letter-spacing:-.012em;
+  transition:color .16s ease, background-color .16s ease;
+}
+.pf-nav__list a:hover{color:var(--pf-on-ink); background:rgba(251,249,246,.07)}
+.pf-nav__list a[aria-current]{color:var(--pf-ink); background:var(--pf-lime); font-weight:700}
+.pf-nav :focus-visible{outline:2px solid var(--pf-lime); outline-offset:2px; border-radius:6px}
+
+.pf-nav__cta{
+  flex:none; display:inline-flex; align-items:center; min-block-size:34px;
+  padding:0 14px; border-radius:7px; border:1px solid var(--pf-on-ink-line);
+  color:var(--pf-on-ink); text-decoration:none;
+  font-size:13.5px; font-weight:600; white-space:nowrap;
+  transition:background-color .16s ease, border-color .16s ease;
+}
+.pf-nav__cta:hover{background:rgba(251,249,246,.09); border-color:rgba(251,249,246,.3)}
+@media (max-width:720px){ .pf-nav__cta{display:none} }
+
+/* ═══════════════ 하단 프로젝트 페이저 ═══════════════ */
+.pf-foot{
+  background:var(--pf-ink); color:var(--pf-on-ink);
+  font-family:var(--pf-sans); font-size:15px; line-height:1.6;
+  border-top:1px solid var(--pf-on-ink-line);
+}
+.pf-foot *{box-sizing:border-box}
+.pf-foot__in{
+  max-width:1200px; margin-inline:auto;
+  padding:clamp(32px,5vw,56px) clamp(16px,4vw,40px);
+}
+
+.pf-pager{
+  display:grid; gap:12px;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+}
+.pf-pager a{
+  display:flex; flex-direction:column; gap:5px;
+  padding:18px 20px; border-radius:14px; text-decoration:none;
+  border:1px solid var(--pf-on-ink-line); color:var(--pf-on-ink);
+  transition:border-color .18s ease, background-color .18s ease;
+}
+.pf-pager a:hover{background:var(--pf-ink-2); border-color:rgba(251,249,246,.32)}
+.pf-pager__k{
+  font-size:11px; font-weight:700; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--pf-lime);
+}
+.pf-pager__v{font-size:16px; font-weight:700; letter-spacing:-.02em}
+.pf-pager .is-next{text-align:end; align-items:flex-end}
+
+.pf-foot__meta{
+  margin-top:clamp(24px,4vw,36px); padding-top:20px;
+  border-top:1px solid var(--pf-on-ink-line);
+  display:flex; flex-wrap:wrap; gap:8px 24px; align-items:baseline;
+  font-size:13px; color:var(--pf-on-ink-2);
+}
+.pf-foot__meta a{color:var(--pf-on-ink); text-decoration:none; border-bottom:1px solid var(--pf-on-ink-line)}
+.pf-foot__meta a:hover{border-bottom-color:var(--pf-lime)}
+.pf-foot__meta .pf-sp{margin-inline-start:auto}
+.pf-foot :focus-visible{outline:2px solid var(--pf-lime); outline-offset:2px; border-radius:6px}
+@media (max-width:640px){ .pf-foot__meta .pf-sp{margin-inline-start:0} }
+
+/* 인쇄 시 크롬은 지운다 — PDF 로 뽑을 때 네비가 매 페이지에 남지 않게. */
+@media print{
+  .pf-nav,.pf-foot{display:none !important}
+}

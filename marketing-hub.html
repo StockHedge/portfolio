@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>강지호 · 마케팅 자동화 허브 — 프로젝트 포트폴리오 | 강지호 포트폴리오</title>
+<meta name="description" content="두 SaaS 플랫폼의 마케팅을 수집→지능→게이트→실행→피드백 6계층으로 자동화한 관제 허브. 설계·구현·운영 전 구간 단독 개발." />
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/Pretendard-400.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/Pretendard-700.woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/shell.css">
+<style>
+/* ============================================================
+   Fonts — Pretendard (SIL OFL 1.1), 로컬 임베드
+   ============================================================ */
+/* ============================================================
+   Design tokens — Toss Blue base
+   대비 검증: --blue-600 on white 5.41:1 (AA 본문 통과)
+             --blue-500 on white 3.71:1 (대형 텍스트·장식 전용)
+   ============================================================ */
+:root{
+  color-scheme: light;
+
+  /* brand */
+  --blue-50:#F0F6FF;
+  --blue-100:#DDE9FE;
+  --blue-200:#B9D2FD;
+  --blue-500:#3182F6;   /* 브랜드 핵심 — 면·아이콘·강조 배경 */
+  --blue-600:#1B64DA;   /* 텍스트·버튼 — AA 통과 */
+  --blue-700:#164FB0;
+
+  /* ink — tinted neutral (블루 5~8% 혼입) */
+  --ink-900:#191F28;
+  --ink-700:#333D4B;
+  --ink-600:#4E5968;
+  --ink-500:#6B7684;
+  --ink-400:#8B95A1;
+
+  /* surface */
+  --line:#E5E8EB;
+  --line-strong:#D1D6DB;
+  --surf-100:#F2F4F6;
+  --surf-50:#F9FAFB;
+  --white:#FFFFFF;
+
+  /* semantic */
+  --ok-fg:#0F8A5F; --ok-bg:#E8F7F1;
+  --warn-fg:#9A6700; --warn-bg:#FFF8E1;
+  --danger-fg:#C2372E; --danger-bg:#FDECEA;
+
+  /* spacing — 4/8 grid */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px;
+  --s6:32px; --s7:48px; --s8:64px; --s9:96px; --s10:128px;
+
+  /* radius */
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px; --r-2xl:28px;
+
+  /* elevation — 카드 일괄 그림자 금지, 목적별 2단계만 */
+  --lift-1:0 1px 2px rgba(25,31,40,.04), 0 4px 12px rgba(25,31,40,.05);
+  --lift-2:0 8px 28px rgba(25,31,40,.10);
+
+  --maxw:1120px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:var(--pf-sans);
+  background:var(--white);
+  color:var(--ink-600);
+  font-size:16px;
+  line-height:1.6;
+  letter-spacing:-.01em;
+  -webkit-font-smoothing:antialiased;
+  /* 한글은 음절이 아니라 어절 단위로 끊는다 */
+  word-break:keep-all;
+  overflow-wrap:break-word;
+}
+h1,h2,h3,h4{color:var(--ink-900);margin:0;letter-spacing:-.025em;font-weight:700}
+h1{font-size:clamp(2.25rem,1.4rem + 3.4vw,4rem);line-height:1.12}
+h2{font-size:clamp(1.5rem,1.15rem + 1.5vw,2.25rem);line-height:1.22}
+h3{font-size:clamp(1.0625rem,.98rem + .4vw,1.25rem);line-height:1.35;font-weight:600}
+h4{font-size:.9375rem;line-height:1.4;font-weight:600}
+p{margin:0}
+ul{margin:0;padding:0;list-style:none}
+a{color:var(--blue-600);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--blue-600);outline-offset:3px;border-radius:var(--r-sm)}
+img{max-width:100%;display:block}
+/* 폴백 끝에 Pretendard — Consolas에 한글 글리프가 없어 두부(■)가 되는 것을 막는다 */
+code,.mono{font-family:var(--pf-mono);font-size:.875em;letter-spacing:0}
+
+/* ── layout ─────────────────────────────────────────── */
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--s5)}
+section{padding-block:var(--s9)}
+section+section{border-top:1px solid var(--line)}
+
+.eyebrow{
+  display:inline-flex;align-items:center;gap:var(--s2);
+  font-size:.8125rem;font-weight:600;letter-spacing:.04em;
+  color:var(--blue-600);text-transform:uppercase;
+}
+.eyebrow::before{content:"";width:20px;height:2px;background:var(--blue-500);border-radius:2px}
+
+.sec-head{margin-bottom:var(--s7);max-width:62ch}
+.sec-head h2{margin-top:var(--s3)}
+.sec-head p{margin-top:var(--s3);font-size:1.0625rem;color:var(--ink-500);line-height:1.65}
+
+/* ── hero ───────────────────────────────────────────── */
+.hero{
+  position:relative;overflow:hidden;
+  background:
+    linear-gradient(180deg,var(--blue-50) 0%,var(--white) 78%);
+  padding-block:var(--s8) var(--s9);
+  border-bottom:1px solid var(--line);
+}
+/* 시그니처: 파이프라인 '레인' — 이 제품의 주제(흐름)에서 도출한 배경 */
+.hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(90deg,rgba(49,130,246,.10) 1px,transparent 1px);
+  background-size:112px 100%;
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.55),transparent 62%);
+  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.55),transparent 62%);
+}
+.hero .wrap{position:relative;z-index:1}
+
+.identity{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s3);
+  padding-bottom:var(--s6);margin-bottom:var(--s7);
+  border-bottom:1px solid var(--blue-100);
+}
+.identity .name{font-size:1.25rem;font-weight:700;color:var(--ink-900);letter-spacing:-.02em}
+.identity .role{font-size:.9375rem;color:var(--ink-500)}
+.identity .spacer{flex:1 1 120px}
+.identity .contact{font-size:.875rem;color:var(--ink-500)}
+.identity .contact a{color:var(--ink-600)}
+
+.badge-live{
+  display:inline-flex;align-items:center;gap:var(--s2);
+  background:var(--ok-bg);color:var(--ok-fg);
+  font-size:.8125rem;font-weight:600;
+  padding:6px 12px;border-radius:999px;
+}
+.badge-live .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:var(--s8) var(--s7);align-items:end}
+.hero h1{margin-top:var(--s4)}
+.hero .lead{margin-top:var(--s5);font-size:1.125rem;line-height:1.7;color:var(--ink-600);max-width:52ch}
+.hero .lead strong{color:var(--ink-900);font-weight:600}
+
+.hero-meta{display:grid;gap:var(--s3);font-size:.9375rem}
+.hero-meta div{display:grid;grid-template-columns:88px 1fr;gap:var(--s4);padding-block:var(--s2);border-top:1px solid var(--line)}
+.hero-meta dt,.hero-meta .k{color:var(--ink-400);font-size:.875rem}
+.hero-meta .v{color:var(--ink-700);font-weight:600}
+
+/* ── stat row ───────────────────────────────────────── */
+.stats{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  margin-top:var(--s8);border:1px solid var(--line);border-radius:var(--r-xl);
+  background:var(--white);overflow:hidden;box-shadow:var(--lift-1);
+}
+.stat{padding:var(--s5) var(--s5) var(--s5);border-left:1px solid var(--line)}
+.stat:first-child{border-left:0}
+.stat .num{font-size:clamp(1.5rem,1.2rem + 1vw,2rem);font-weight:700;color:var(--ink-900);line-height:1.1;letter-spacing:-.03em}
+.stat .num .unit{font-size:.6em;font-weight:600;color:var(--ink-400);margin-left:2px}
+.stat .lbl{margin-top:var(--s2);font-size:.875rem;color:var(--ink-500)}
+
+/* ── generic cards ──────────────────────────────────── */
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5)}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s5)}
+
+.panel{border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--s5);background:var(--white)}
+.panel.tint{background:var(--surf-50);border-color:var(--line)}
+.panel h3+p{margin-top:var(--s3);color:var(--ink-500);font-size:.9375rem;line-height:1.6}
+.panel .kicker{font-size:.75rem;font-weight:600;letter-spacing:.06em;color:var(--ink-400);text-transform:uppercase}
+
+/* 문제/해법 대비 — 동일 카드 반복 회피, 좌우 성격을 다르게 */
+.problem{
+  border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:var(--s6);background:var(--surf-50);
+}
+.solution{
+  border:1px solid var(--blue-200);border-radius:var(--r-lg);
+  padding:var(--s6);background:var(--blue-50);
+}
+.problem h3,.solution h3{margin-bottom:var(--s4)}
+.problem li,.solution li{
+  position:relative;padding-left:var(--s5);margin-top:var(--s3);
+  font-size:.9375rem;line-height:1.6;color:var(--ink-600);
+}
+.problem li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:2px;background:var(--ink-400);border-radius:2px}
+.solution li::before{content:"";position:absolute;left:0;top:.5em;width:8px;height:8px;border-radius:50%;border:2px solid var(--blue-500)}
+.solution li strong{color:var(--ink-900);font-weight:600}
+
+/* ── layer flow (6계층) ─────────────────────────────── */
+.layers{display:grid;gap:var(--s3)}
+.layer{
+  display:grid;grid-template-columns:44px 168px 1fr;gap:var(--s5);align-items:center;
+  border:1px solid var(--line);border-radius:var(--r-md);
+  padding:var(--s4) var(--s5);background:var(--white);
+  transition:border-color .18s ease-out,transform .18s ease-out;
+}
+.layer:hover{border-color:var(--blue-200);transform:translateX(3px)}
+.layer .idx{
+  width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+  background:var(--blue-50);color:var(--blue-600);
+  font-weight:700;font-size:.875rem;font-variant-numeric:tabular-nums;
+}
+.layer .nm{font-weight:600;color:var(--ink-900);font-size:1rem}
+.layer .nm span{display:block;font-size:.75rem;color:var(--ink-400);font-weight:400;margin-top:2px;letter-spacing:0}
+.layer .mods{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.chip{
+  font-size:.8125rem;padding:4px 10px;border-radius:var(--r-sm);
+  background:var(--surf-100);color:var(--ink-600);
+}
+/* 13px 하한 유지 — 한글은 같은 px에서 획 밀도가 높아 더 일찍 뭉친다 */
+.chip.mono{font-size:.8125rem}
+.chip code{font-size:1em;color:var(--ink-700)}
+.layer.base{background:var(--surf-50);border-style:dashed}
+.layer.base .idx{background:var(--ink-900);color:var(--white)}
+
+/* ── state machine ──────────────────────────────────── */
+.sm{margin-top:var(--s6)}
+.sm-track{
+  display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);
+  padding:var(--s5);border:1px solid var(--line);border-radius:var(--r-lg);
+  background:var(--surf-50);
+}
+.node{
+  font-size:.8125rem;font-weight:600;padding:7px 12px;border-radius:var(--r-sm);
+  background:var(--white);border:1px solid var(--line-strong);color:var(--ink-700);
+  white-space:nowrap;
+}
+.node.start{border-color:var(--blue-500);color:var(--blue-700);background:var(--blue-50)}
+.node.gate{border-color:#E0B94D;background:var(--warn-bg);color:var(--warn-fg)}
+.node.end{border-color:#57C89E;background:var(--ok-bg);color:var(--ok-fg)}
+.arrow{color:var(--ink-400);font-size:.875rem;flex:none}
+.sm-exits{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s4)}
+.node.exit{border-color:#F0B4AE;background:var(--danger-bg);color:var(--danger-fg)}
+.sm-note{
+  margin-top:var(--s4);padding:var(--s4) var(--s5);
+  border-left:3px solid var(--blue-500);background:var(--blue-50);
+  border-radius:0 var(--r-sm) var(--r-sm) 0;
+  font-size:.9375rem;line-height:1.65;color:var(--ink-700);
+}
+.sm-note strong{color:var(--ink-900);font-weight:600}
+
+/* ── screens ────────────────────────────────────────── */
+.shots{display:grid;gap:var(--s8);margin-top:var(--s7)}
+.shot{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--s7);align-items:start}
+.shot:nth-child(even){grid-template-columns:320px minmax(0,1fr)}
+/* grid 아이템도 min-width 기본값이 auto — 체인 전체를 풀어야 축소된다 */
+.shot,.shot-fig,.browser,.shot-txt{min-width:0}
+.shot:nth-child(even) .shot-fig{order:2}
+.shot:nth-child(even) .shot-txt{order:1}
+
+.shot-fig{margin:0}
+.browser{
+  border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+  background:var(--white);box-shadow:var(--lift-2);
+}
+.browser-bar{
+  display:flex;align-items:center;gap:var(--s2);overflow:hidden;
+  padding:10px var(--s4);background:var(--surf-100);border-bottom:1px solid var(--line);
+}
+.browser-bar i{width:9px;height:9px;border-radius:50%;background:var(--line-strong);flex:none}
+.browser-bar .url{
+  margin-left:var(--s3);font-size:.75rem;color:var(--ink-400);
+  font-family:var(--pf-mono);letter-spacing:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  /* flex 아이템의 min-width 기본값 auto 는 축소를 거부해 부모를 밀어낸다 */
+  min-width:0;flex:1 1 auto;
+}
+.browser img{width:100%;height:auto}
+
+.shot-txt{position:sticky;top:calc(var(--pf-nav-h) + var(--s5))}
+.shot-txt .no{
+  font-size:.75rem;font-weight:700;color:var(--blue-600);
+  font-variant-numeric:tabular-nums;letter-spacing:.08em;
+}
+.shot-txt h3{margin-top:var(--s2)}
+.shot-txt p{margin-top:var(--s3);font-size:.9375rem;line-height:1.7;color:var(--ink-600)}
+.shot-txt .facts{margin-top:var(--s4);border-top:1px solid var(--line);padding-top:var(--s4)}
+.shot-txt .facts li{
+  display:grid;grid-template-columns:auto 1fr;gap:var(--s3);
+  font-size:.875rem;color:var(--ink-500);padding-block:var(--s2);
+}
+.shot-txt .facts b{color:var(--ink-700);font-weight:600}
+
+/* ── decisions ──────────────────────────────────────── */
+.dec{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}
+.dec article{
+  border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--s5);
+  background:var(--white);display:grid;gap:var(--s3);align-content:start;
+}
+.dec article:nth-child(1),.dec article:nth-child(4){background:var(--surf-50)}
+.dec .tag{
+  justify-self:start;font-size:.6875rem;font-weight:700;letter-spacing:.06em;
+  padding:4px 8px;border-radius:6px;background:var(--blue-500);color:var(--white);
+  text-transform:uppercase;
+}
+.dec h4{color:var(--ink-900)}
+.dec p{font-size:.9375rem;line-height:1.65;color:var(--ink-600)}
+.dec .why{
+  font-size:.875rem;color:var(--ink-500);line-height:1.6;
+  padding-top:var(--s3);border-top:1px dashed var(--line-strong);
+}
+.dec .why b{color:var(--ink-700);font-weight:600}
+
+/* ── stack ──────────────────────────────────────────── */
+.stack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--line);border-radius:var(--r-xl);overflow:hidden}
+.stack > div{padding:var(--s6) var(--s5);border-left:1px solid var(--line)}
+.stack > div:first-child{border-left:0}
+.stack h4{color:var(--ink-400);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase}
+.stack ul{margin-top:var(--s4);display:grid;gap:var(--s3)}
+.stack li{font-size:.9375rem;color:var(--ink-700);display:grid;grid-template-columns:8px 1fr;gap:var(--s3);align-items:baseline}
+.stack li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--blue-500);transform:translateY(-2px)}
+.stack li span{display:block;font-size:.8125rem;color:var(--ink-400);margin-top:1px}
+
+/* ── ops table ──────────────────────────────────────── */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-lg)}
+table{width:100%;border-collapse:collapse;font-size:.9375rem;min-width:560px}
+thead th{
+  text-align:left;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-400);font-weight:600;padding:var(--s4) var(--s5);
+  background:var(--surf-50);border-bottom:1px solid var(--line);
+}
+tbody td{padding:var(--s4) var(--s5);border-bottom:1px solid var(--line);color:var(--ink-600);vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+tbody td:first-child{color:var(--ink-900);font-weight:600;white-space:nowrap}
+td .mono{color:var(--ink-500)}
+
+/* ── scale / footer ─────────────────────────────────── */
+.scale{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s5)}
+/* 직계 자식만 — 후손 선택자면 카드 내부 div 에도 선이 그려진다 */
+.scale > div{border-top:2px solid var(--ink-900);padding-top:var(--s4)}
+.scale .n{font-size:clamp(1.75rem,1.4rem + 1.4vw,2.5rem);font-weight:700;color:var(--ink-900);line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.scale .n .unit{font-size:.45em;color:var(--ink-400);margin-left:3px;font-weight:600}
+.scale .l{margin-top:var(--s3);font-size:.875rem;color:var(--ink-500)}
+.scale .s{margin-top:var(--s1);font-size:.8125rem;color:var(--ink-400)}
+
+footer{background:var(--ink-900);color:#A8B2BE;padding-block:var(--s7)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:var(--s5);align-items:center;justify-content:space-between}
+footer strong{color:var(--white);font-size:1rem;display:block}
+footer .meta{font-size:.875rem;margin-top:var(--s2)}
+footer a{color:#C7D2DE}
+footer .note{font-size:.8125rem;color:#6F7C8B;max-width:44ch;line-height:1.6}
+
+/* ── responsive ─────────────────────────────────────── */
+@media (max-width:1000px){
+  .hero-grid{grid-template-columns:1fr;gap:var(--s6)}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stat:nth-child(3){border-left:0}
+  .stat:nth-child(n+3){border-top:1px solid var(--line)}
+  .shot,.shot:nth-child(even){grid-template-columns:minmax(0,1fr)}
+  .shot:nth-child(even) .shot-fig{order:1}
+  .shot:nth-child(even) .shot-txt{order:2}
+  .shot-txt{position:static}
+  .stack{grid-template-columns:1fr}
+  .stack > div{border-left:0;border-top:1px solid var(--line)}
+  .stack > div:first-child{border-top:0}
+  .scale{grid-template-columns:repeat(2,1fr);gap:var(--s6) var(--s5)}
+}
+@media (max-width:720px){
+  section{padding-block:var(--s8)}
+  .grid-2,.grid-3,.dec{grid-template-columns:1fr}
+  .layer{grid-template-columns:36px 1fr;gap:var(--s3) var(--s4)}
+  .layer .mods{grid-column:1/-1}
+  .hero-meta div{grid-template-columns:76px 1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .layer:hover{transform:none}
+}
+@media print{
+  .hero{background:var(--white)}
+  .hero::after{display:none}
+  section{padding-block:var(--s6);break-inside:avoid}
+  .shot{break-inside:avoid}
+  .browser{box-shadow:none}
+  footer{background:var(--white);color:var(--ink-600)}
+  footer strong{color:var(--ink-900)}
+}
+</style>
+</head>
+<body>
+<nav class="pf-nav" aria-label="포트폴리오 내비게이션">
+  <div class="pf-nav__in">
+    <a class="pf-nav__brand" href="index.html"><span class="pf-nav__mark" aria-hidden="true"></span>강지호&nbsp;<b>Portfolio</b></a>
+    <ul class="pf-nav__list">
+    <li><a href="index.html">프로필</a></li>
+    <li><a href="aiwebbuilder.html">AI 웹빌더</a></li>
+    <li><a href="finple.html">FinPle</a></li>
+    <li><a href="marketing-hub.html" aria-current="page">마케팅 허브</a></li>
+    <li><a href="ai-beta-tester.html">AI 베타테스터</a></li>
+    </ul>
+    <a class="pf-nav__cta" href="mailto:jihono55@gmail.com">연락하기</a>
+  </div>
+</nav>
+
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="identity">
+      <span class="name">강지호</span>
+      <span class="role">Full-stack / 시스템 설계 · 단독 개발</span>
+      <span class="spacer"></span>
+      <span class="contact"><a href="mailto:jihono55@gmail.com">jihono55@gmail.com</a></span>
+    </div>
+
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Project 01 · 사내 운영 시스템</span>
+        <h1>마케팅 자동화 허브</h1>
+        <p class="lead">
+          두 개의 SaaS 플랫폼이 만드는 마케팅 활동을
+          <strong>수집 → 지능 → 게이트 → 실행 → 피드백</strong> 5계층으로 자동화하고,
+          하나의 대시보드에서 관제하는 시스템입니다.
+          북극성 지표는 좋아요가 아니라 <strong>가입·결제 전환</strong>입니다.
+        </p>
+        <p style="margin-top:var(--s5)">
+          <span class="badge-live"><span class="dot"></span>운영 중 · Fly.io v60</span>
+        </p>
+      </div>
+
+      <div class="hero-meta">
+        <div><span class="k">기간</span><span class="v">2026.08 — 운영 중</span></div>
+        <div><span class="k">역할</span><span class="v">설계 · 구현 · 배포 · 운영 전 구간</span></div>
+        <div><span class="k">규모</span><span class="v">54,862 LOC · 177 커밋</span></div>
+        <div><span class="k">대시보드</span><span class="v"><a href="https://marketing-hub-dashboard-1lt.pages.dev">marketing-hub-dashboard</a></span></div>
+        <div><span class="k">API</span><span class="v"><a href="https://marketing-hub.fly.dev">marketing-hub.fly.dev</a></span></div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="num">879<span class="unit">건</span></div>
+        <div class="lbl">백엔드 테스트 통과<br />(프론트 vitest 73건 별도)</div>
+      </div>
+      <div class="stat">
+        <div class="num">17<span class="unit">개</span></div>
+        <div class="lbl">자동 실행 배치 잡<br />6개 스케줄 레인</div>
+      </div>
+      <div class="stat">
+        <div class="num">29<span class="unit">개</span></div>
+        <div class="lbl">DB 테이블<br />API 라우터 21개</div>
+      </div>
+      <div class="stat">
+        <div class="num">3<span class="unit">중</span></div>
+        <div class="lbl">멱등성 방어<br />+ 광고 예산 하드캡</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════ 개요 ══════════════════ -->
+<section id="overview">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Overview</span>
+      <h2>왜 만들었는가</h2>
+      <p>
+        SaaS 두 개를 혼자 운영하면 마케팅은 가장 먼저 방치됩니다.
+        콘텐츠를 만들 시간도, 성과를 추적할 시간도 없고,
+        광고는 "잘못 눌러서 돈이 나가는" 리스크 때문에 아예 켜지 못합니다.
+      </p>
+    </div>
+
+    <div class="grid-2">
+      <div class="problem">
+        <h3>문제</h3>
+        <ul>
+          <li>콘텐츠 기획·제작·발행이 전부 수작업이라 주 1회도 유지되지 않음</li>
+          <li>좋아요·조회수는 보이는데 <em>가입·결제로 이어졌는지는 알 수 없음</em></li>
+          <li>광고는 오조작 한 번이면 예산이 증발 — 그래서 켜지 못함</li>
+          <li>플랫폼이 둘이라 지표가 섞이고, 어느 쪽 성과인지 구분이 안 됨</li>
+        </ul>
+      </div>
+      <div class="solution">
+        <h3>해법</h3>
+        <ul>
+          <li><strong>파이프라인화</strong> — 수집부터 성과 측정까지 13단계 상태머신으로 자동 진행</li>
+          <li><strong>전환 어트리뷰션</strong> — UTM·프로모코드를 발급 시점에 콘텐츠와 묶어 가입·결제까지 추적</li>
+          <li><strong>가드레일</strong> — 예산 상한을 코드 상수로 못 박아 설정으로도 완화 불가</li>
+          <li><strong>워크스페이스 차원</strong> — 성과·리드·동의를 플랫폼별로 분리 저장</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ 아키텍처 ══════════════════ -->
+<section id="architecture">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Architecture</span>
+      <h2>계층 구조</h2>
+      <p>
+        각 계층은 아래 계층만 알고 위 계층은 모릅니다.
+        예를 들어 실행 계층은 Meta 연동이 실제 API인지 스텁인지 알지 못한 채 동작합니다.
+      </p>
+    </div>
+
+    <div class="layers">
+      <div class="layer">
+        <div class="idx">01</div>
+        <div class="nm">수집 <span>collectors/</span></div>
+        <div class="mods">
+          <span class="chip mono">youtube</span>
+          <span class="chip mono">ad_library</span>
+          <span class="chip mono">business_discovery</span>
+          <span class="chip mono">hashtag</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="idx">02</div>
+        <div class="nm">지능 <span>intelligence/</span></div>
+        <div class="mods">
+          <span class="chip mono">bandit</span>
+          <span class="chip mono">extractor</span>
+          <span class="chip mono">generator</span>
+          <span class="chip mono">brand_kit</span>
+          <span class="chip mono">media</span>
+          <span class="chip mono">ad_engine</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="idx">03</div>
+        <div class="nm">게이트 <span>gates/</span></div>
+        <div class="mods">
+          <span class="chip"><code>compliance</code> 룰 + LLM 2단</span>
+          <span class="chip mono">tiering</span>
+          <span class="chip mono">approval</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="idx">04</div>
+        <div class="nm">실행 <span>executors/</span></div>
+        <div class="mods">
+          <span class="chip mono">publisher</span>
+          <span class="chip mono">email_sender</span>
+          <span class="chip mono">ads_executor</span>
+          <span class="chip mono">community</span>
+          <span class="chip mono">pacing</span>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="idx">05</div>
+        <div class="nm">피드백 <span>feedback/</span></div>
+        <div class="mods">
+          <span class="chip mono">rollup</span>
+          <span class="chip mono">platform_sync</span>
+          <span class="chip mono">watchers</span>
+          <span class="chip mono">bandit_update</span>
+          <span class="chip mono">report</span>
+        </div>
+      </div>
+      <div class="layer base">
+        <div class="idx">00</div>
+        <div class="nm">기반 <span>전 계층 공통</span></div>
+        <div class="mods">
+          <span class="chip mono">guardrails/</span>
+          <span class="chip"><code>tokens/</code> Meta 회전</span>
+          <span class="chip"><code>orchestrator/</code> advisory lock</span>
+          <span class="chip"><code>core/</code> crypto · idempotency · rate_limit</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sm">
+      <h3>콘텐츠 상태머신 — 13개 상태, 전이는 코드가 강제</h3>
+      <div class="sm-track" style="margin-top:var(--s4)">
+        <span class="node start">draft</span><span class="arrow">→</span>
+        <span class="node">compliance_check</span><span class="arrow">→</span>
+        <span class="node gate">pending_approval</span><span class="arrow">→</span>
+        <span class="node">approved</span><span class="arrow">→</span>
+        <span class="node">scheduled</span><span class="arrow">→</span>
+        <span class="node">publishing</span><span class="arrow">→</span>
+        <span class="node">published</span><span class="arrow">→</span>
+        <span class="node end">measured</span>
+      </div>
+      <div class="sm-exits">
+        <span class="node exit">compliance_failed</span>
+        <span class="node exit">rejected</span>
+        <span class="node gate">hold</span>
+        <span class="node exit">publish_failed</span>
+        <span class="node exit">dead_letter</span>
+      </div>
+      <p class="sm-note">
+        상태 컬럼에 값을 <strong>직접 대입할 수 없습니다.</strong>
+        모든 전이는 <code>assert_transition()</code>을 거치고, 허용되지 않은 전이는
+        <code>ValueError</code>로 즉시 실패합니다.
+        <code>dead_letter</code>는 재시도 예산 소진 지점이지 콘텐츠 결함이 아니므로,
+        외부 원인(권한·토큰)이 해소되면 <strong>같은 캡션·미디어로 되살릴 경로</strong>를 남겨뒀습니다 —
+        실제로 Instagram 권한 부족으로 발행이 3회 소진돼 DB를 직접 만질 뻔한 사고에서 나온 설계입니다.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ 실제 화면 ══════════════════ -->
+<section id="screens">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Screens</span>
+      <h2>실제 운영 화면</h2>
+      <p>
+        아래는 목업이 아니라 <strong>현재 운영 중인 대시보드를 그대로 캡쳐</strong>한 것입니다.
+        데이터·시각·상태는 캡쳐 시점(2026-08-25)의 실제 값입니다.
+      </p>
+    </div>
+
+    <div class="shots">
+
+      <article class="shot">
+        <figure class="shot-fig">
+          <div class="browser">
+            <div class="browser-bar"><i></i><i></i><i></i><span class="url">marketing-hub-dashboard-1lt.pages.dev/overview</span></div>
+            <img src="assets/screens/01-overview.jpg" alt="홈 대시보드 — 방문·가입·결제·매출 지표 카드와 일별 추이, UTM 유입 상위 5 차트" />
+          </div>
+        </figure>
+        <div class="shot-txt">
+          <div class="no">01 / OVERVIEW</div>
+          <h3>관제 홈</h3>
+          <p>
+            워크스페이스별 획득 지표를 한 화면에 모읍니다.
+            좋아요가 아니라 <b>방문 → 가입 → 결제 → 매출</b>을 같은 축에 놓아,
+            콘텐츠가 실제 전환을 만들었는지로만 판단하게 했습니다.
+          </p>
+          <ul class="facts">
+            <li><b>기간</b><span>7 / 30 / 90일 토글</span></li>
+            <li><b>차트</b><span>일별 추이 · UTM 유입 상위 5</span></li>
+            <li><b>빈 상태</b><span>"데이터 없음" 대신 다음 행동을 제시</span></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="shot">
+        <figure class="shot-fig">
+          <div class="browser">
+            <div class="browser-bar"><i></i><i></i><i></i><span class="url">marketing-hub-dashboard-1lt.pages.dev/pipeline</span></div>
+            <img src="assets/screens/03-pipeline-table.jpg" alt="파이프라인 표 뷰 — 워크스페이스·채널·상태·캡션·UTM 캠페인·생성 시각 컬럼과 상태 뱃지" />
+          </div>
+        </figure>
+        <div class="shot-txt">
+          <div class="no">02 / PIPELINE</div>
+          <h3>콘텐츠 파이프라인</h3>
+          <p>
+            상태머신 13단계가 그대로 UI가 됩니다.
+            <b>보류 · 게시됨 · 컴플라이언스 실패 · 반려됨 · 성과 측정 완료</b>가
+            색으로 구분되고, 각 건에 <code>utm_campaign</code>이 붙어
+            나중에 전환을 역추적할 수 있습니다.
+          </p>
+          <ul class="facts">
+            <li><b>뷰</b><span>칸반 보드 / 표 전환</span></li>
+            <li><b>필터</b><span>워크스페이스 · 채널 · 상태 13종</span></li>
+            <li><b>추적</b><span>건별 UTM 캠페인 자동 발급</span></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="shot">
+        <figure class="shot-fig">
+          <div class="browser">
+            <div class="browser-bar"><i></i><i></i><i></i><span class="url">marketing-hub-dashboard-1lt.pages.dev/pipeline · board</span></div>
+            <img src="assets/screens/02-pipeline-board.jpg" alt="파이프라인 칸반 보드 — 초안·컴플라이언스 검토·승인 대기·승인됨·예약됨·게시 중 컬럼과 이탈/보류 하단 트랙" />
+          </div>
+        </figure>
+        <div class="shot-txt">
+          <div class="no">03 / KANBAN</div>
+          <h3>흐름과 이탈의 분리</h3>
+          <p>
+            정상 흐름은 위쪽 가로 트랙, <b>이탈·보류</b>는 아래쪽 별도 트랙으로 뗐습니다.
+            막힌 콘텐츠가 정상 흐름에 섞여 보이면 "지금 무엇이 멈춰 있는가"를
+            한눈에 못 잡기 때문입니다.
+          </p>
+          <ul class="facts">
+            <li><b>상단</b><span>초안 → 게시 중 정상 경로</span></li>
+            <li><b>하단</b><span>컴플라이언스 실패 · 반려 · 보류 · 데드레터</span></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="shot">
+        <figure class="shot-fig">
+          <div class="browser">
+            <div class="browser-bar"><i></i><i></i><i></i><span class="url">marketing-hub-dashboard-1lt.pages.dev/ads · 가드레일</span></div>
+            <img src="assets/screens/04-ads-guardrail.jpg" alt="광고 가드레일 탭 — 워크스페이스별 일 총액 한도·캠페인당 한도·1회 최대 변경폭·오늘 조정 횟수·차단된 시도" />
+          </div>
+        </figure>
+        <div class="shot-txt">
+          <div class="no">04 / GUARDRAIL</div>
+          <h3>돈이 나가는 경로의 한도</h3>
+          <p>
+            광고는 오조작 하나로 예산이 증발합니다. 그래서 상한을
+            <b>코드 상수</b>로 두고, 운영 설정은 <em>더 엄격한 방향으로만</em> 반영되게 했습니다
+            (<code>effective() = min(코드상수, 설정)</code>).
+            화면에는 차단된 시도까지 기록됩니다.
+          </p>
+          <ul class="facts">
+            <li><b>하드캡</b><span>일 30,000원 / 월 300,000원 / 캠페인 15,000원</span></li>
+            <li><b>변경폭</b><span>1회 최대 20%</span></li>
+            <li><b>증액</b><span>이 화면에서 불가 — 텔레그램 승인(T2) 필수</span></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="shot">
+        <figure class="shot-fig">
+          <div class="browser">
+            <div class="browser-bar"><i></i><i></i><i></i><span class="url">marketing-hub-dashboard-1lt.pages.dev/settings · 잡</span></div>
+            <img src="assets/screens/05-jobs.jpg" alt="설정 잡 탭 — poll_aiwb_daily, rollup_ingest_daily, telegram_poll, watchers, approval_timeout, publish_due 등 배치 잡 실행 이력이 모두 성공/완료" />
+          </div>
+        </figure>
+        <div class="shot-txt">
+          <div class="no">05 / JOBS</div>
+          <h3>배치 실행 이력</h3>
+          <p>
+            17개 잡이 6개 레인에서 돌고, 실행 결과는 전부 <code>job_runs</code>에 남습니다.
+            같은 잡이 겹쳐 돌지 않도록 <b>PostgreSQL advisory lock</b>으로 감싸고,
+            건별로는 <code>FOR UPDATE SKIP LOCKED</code>를 씁니다.
+          </p>
+          <ul class="facts">
+            <li><b>100분 레인</b><span>publish_due · approval_timeout · watchers 등</span></li>
+            <li><b>야간</b><span>토큰 회전 · 밴딧 갱신 · 미디어 비공개화</span></li>
+            <li><b>기록</b><span>성공·실패·소요·오류 문자열(시크릿 제거 후)</span></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="shot">
+        <figure class="shot-fig">
+          <div class="browser">
+            <div class="browser-bar"><i></i><i></i><i></i><span class="url">marketing-hub-dashboard-1lt.pages.dev/attribution</span></div>
+            <img src="assets/screens/06-attribution.jpg" alt="어트리뷰션 화면 — 캠페인별 터치·베타 신청·가입·결제·매출·콘텐츠 상태 컬럼" />
+          </div>
+        </figure>
+        <div class="shot-txt">
+          <div class="no">06 / ATTRIBUTION</div>
+          <h3>전환 기여도 추적</h3>
+          <p>
+            캠페인 한 줄에 <b>터치 → 베타 신청 → 가입 → 결제 → 매출</b>이 이어집니다.
+            GA4를 붙이지 않고 자체 이벤트로 구현했는데,
+            UTM에서 가입까지의 조인은 GA4로는 불가능하고 태그 삽입이 더 침습적이라는 판단이었습니다.
+          </p>
+          <ul class="facts">
+            <li><b>축</b><span>캠페인별 / 채널별 전환</span></li>
+            <li><b>연결</b><span>프로모코드 발급 시점에 콘텐츠와 바인딩</span></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="shot">
+        <figure class="shot-fig">
+          <div class="browser">
+            <div class="browser-bar"><i></i><i></i><i></i><span class="url">marketing-hub-dashboard-1lt.pages.dev/overview · 알림</span></div>
+            <img src="assets/screens/07-alerts.jpg" alt="활성 알림 목록 — P1 Meta 토큰 갱신 실패, P2 승인 타임아웃·광고 캠페인 제안·광고 잔액 부족 알림" />
+          </div>
+        </figure>
+        <div class="shot-txt">
+          <div class="no">07 / ALERTS</div>
+          <h3>이상 신호를 사람에게</h3>
+          <p>
+            자동화의 실패 모드는 "조용히 멈추는 것"입니다.
+            토큰 갱신 실패, 승인 타임아웃, 광고 잔액 부족을
+            <b>P1 / P2 우선순위</b>로 띄우고 각각 해소 처리 경로를 답니다.
+          </p>
+          <ul class="facts">
+            <li><b>P1</b><span>즉시 조치 — 토큰·발행 실패</span></li>
+            <li><b>P2</b><span>기한 내 조치 — 잔액·승인 지연</span></li>
+            <li><b>보조 채널</b><span>텔레그램 봇으로 동시 통지</span></li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ 설계 결정 ══════════════════ -->
+<section id="decisions">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Engineering</span>
+      <h2>핵심 설계 결정</h2>
+      <p>
+        "돌아가게 만드는 것"과 "혼자 운영해도 안 터지게 만드는 것"은 다릅니다.
+        아래는 후자를 위해 코드 레벨에 못 박은 불변조건들입니다.
+      </p>
+    </div>
+
+    <div class="dec">
+      <article>
+        <span class="tag">Safety</span>
+        <h4>가드레일은 완화 불가</h4>
+        <p>
+          예산 상한을 <code>guardrails/limits.py</code> 코드 상수로 두고,
+          런타임 설정은 <code>min(코드상수, 설정)</code>으로만 반영합니다.
+          DB를 고쳐도 상한은 내려가지 않습니다.
+        </p>
+        <p class="why"><b>왜:</b> 운영 설정이 안전장치를 무력화할 수 있으면 그건 안전장치가 아닙니다. 완화하려면 배포가 필요하도록 만들었습니다.</p>
+      </article>
+
+      <article>
+        <span class="tag">Consistency</span>
+        <h4>어휘 단일 소스</h4>
+        <p>
+          채널·상태·티어·액션 어휘를 <code>models/vocab.py</code> 한 곳에만 정의하고,
+          <code>STATUS_TRANSITIONS</code>가 상태머신을 강제합니다.
+          문자열 리터럴 재정의는 테스트가 차단합니다.
+        </p>
+        <p class="why"><b>왜:</b> 상태 문자열이 여러 곳에 흩어지면 오타 하나가 조용히 흐름을 끊습니다. 어휘를 하나로 묶어 컴파일 타임에 가깝게 잡습니다.</p>
+      </article>
+
+      <article>
+        <span class="tag">Idempotency</span>
+        <h4>멱등성 3중 방어</h4>
+        <p>
+          ① PostgreSQL advisory lock으로 잡 중복 실행 차단
+          ② 자연키 <code>ON CONFLICT</code>는 누적이 아닌 대입
+          ③ 건별 트랜잭션 + <code>FOR UPDATE SKIP LOCKED</code>.
+        </p>
+        <p class="why"><b>왜:</b> 크론은 재시도되고 겹칩니다. 한 겹만 두면 "같은 글이 두 번 올라가는" 사고가 언젠가 납니다.</p>
+      </article>
+
+      <article>
+        <span class="tag">Testability</span>
+        <h4>외부 연동 4모드</h4>
+        <p>
+          Meta 연동은 <code>disabled / stub / dryrun / live</code> 네 모드를 갖고,
+          상위 계층은 어느 모드인지 모릅니다.
+          토큰이 없어도 스텁이 가짜 ID를 반환해 <b>전 구간이 완주</b>됩니다.
+        </p>
+        <p class="why"><b>왜:</b> 외부 API가 없으면 테스트가 막히는 구조는 결국 테스트를 안 쓰게 만듭니다. 모드를 하위로 밀어넣어 상위 로직을 항상 검증 가능하게 했습니다.</p>
+      </article>
+
+      <article>
+        <span class="tag">Blast radius</span>
+        <h4>부작용 초크 포인트 3개</h4>
+        <p>
+          외부로 나가는 모든 행위는
+          <code>send_email()</code> · <code>apply_ad_action()</code> · <code>publish()</code>
+          세 함수만 통과합니다. 다른 경로의 발송·집행·발행은 금지입니다.
+        </p>
+        <p class="why"><b>왜:</b> 검증 지점이 흩어지면 언젠가 하나를 빠뜨립니다. 좁은 통로 3개로 모아 여기서만 가드레일을 검사합니다.</p>
+      </article>
+
+      <article>
+        <span class="tag">Security</span>
+        <h4>오류 문자열 정제는 공통 계층</h4>
+        <p>
+          <code>orchestrator/runner.py</code>의 스크러버가 오류 메시지의 URL 쿼리스트링을
+          제거한 뒤 기록합니다. 개별 핸들러가 정제를 빠뜨려도
+          로그와 API 응답에 시크릿이 남지 않습니다.
+        </p>
+        <p class="why"><b>왜:</b> 실제로 토큰이 오류 로그에 섞여 나간 적이 있습니다. "각자 조심한다"가 아니라 통과 지점에서 일괄 처리하도록 바꿨습니다.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ 스택 ══════════════════ -->
+<section id="stack">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Tech Spec</span>
+      <h2>개발 스펙</h2>
+      <p>새 스택을 고르는 대신, 이미 운영 중인 두 플랫폼과 같은 인프라를 썼습니다. 혼자 운영하는 시스템에서 스택이 늘어나면 장애 대응 비용이 그만큼 늘기 때문입니다.</p>
+    </div>
+
+    <div class="stack">
+      <div>
+        <h4>Backend</h4>
+        <ul>
+          <li>Python 3.11 · FastAPI<span>단일 앱 · 라우터 21개</span></li>
+          <li>SQLAlchemy 2.0 (async)<span>테이블 29개 · Alembic 마이그레이션</span></li>
+          <li>Pydantic v2<span>요청·응답 스키마 계약</span></li>
+          <li>Pillow · ffmpeg<span>카드뉴스 · 릴스 자체 렌더러</span></li>
+          <li>pytest · ruff · mypy<span>879 통과 · 린트 · 타입체크</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Frontend</h4>
+        <ul>
+          <li>React 18 · TypeScript<span>컴포넌트 162 파일</span></li>
+          <li>Vite<span>빌드 · 개발 서버</span></li>
+          <li>TanStack Query<span>서버 상태 · 캐시 무효화</span></li>
+          <li>Zustand<span>클라이언트 상태</span></li>
+          <li>vitest<span>73건 통과</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Infra &amp; Ops</h4>
+        <ul>
+          <li>Fly.io (도쿄)<span>scale-to-zero · release_command 마이그레이션</span></li>
+          <li>Neon PostgreSQL<span>싱가포르 · pooled/direct 분리</span></li>
+          <li>Upstash Redis<span>레이트리밋 · 멱등키</span></li>
+          <li>Cloudflare Pages · R2<span>대시보드 호스팅 · 미디어 저장</span></li>
+          <li>GitHub Actions cron<span>내부 API 호출 방식 오케스트레이션</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin-top:var(--s7)">배치 스케줄</h3>
+    <div class="tbl-wrap" style="margin-top:var(--s4)">
+      <table>
+        <thead>
+          <tr><th scope="col">레인</th><th scope="col">주기</th><th scope="col">잡</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>every-100m</td><td>100분</td><td class="mono">publish_due · approval_timeout · watchers · telegram_poll · rollup_ingest_daily · poll_aiwb_daily</td></tr>
+          <tr><td>every-6h</td><td>6시간</td><td class="mono">collect_trends</td></tr>
+          <tr><td>nightly</td><td>매일 03:00 KST</td><td class="mono">refresh_tokens · poll_embolos_snapshot · bandit_update · media_privatize</td></tr>
+          <tr><td>morning</td><td>매일 05:00 KST</td><td class="mono">generate_content · adjust_ads</td></tr>
+          <tr><td>weekly</td><td>월 09:00 KST</td><td class="mono">weekly_report</td></tr>
+          <tr><td>manual</td><td>수동</td><td class="mono">잡 이름 지정 실행</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:var(--s4);font-size:.875rem;color:var(--ink-400);line-height:1.6">
+      100분 주기는 GitHub Actions 무료 한도(월 2,000분)를 지키기 위한 선택입니다.
+      cron 엔트리 3개(<code>0 0-20/5</code> · <code>40 1-21/5</code> · <code>20 3-23/5</code>)를 조합해
+      정확히 100분 간격을 만들고, 발행·승인 반영이 최대 100분 지연되는 것을 감수했습니다.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════ 규모 ══════════════════ -->
+<section id="scale">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Scale</span>
+      <h2>개발 규모</h2>
+      <p>2026년 8월 3일 첫 커밋부터 8월 24일까지 22일간, 설계·구현·배포·운영을 혼자 수행했습니다.</p>
+    </div>
+
+    <div class="scale">
+      <div>
+        <div class="n">21,160<span class="unit">LOC</span></div>
+        <div class="l">백엔드 애플리케이션</div>
+        <div class="s">Python 129 파일</div>
+      </div>
+      <div>
+        <div class="n">17,137<span class="unit">LOC</span></div>
+        <div class="l">테스트 코드</div>
+        <div class="s">프로덕션 코드 대비 81%</div>
+      </div>
+      <div>
+        <div class="n">16,565<span class="unit">LOC</span></div>
+        <div class="l">프론트엔드</div>
+        <div class="s">TypeScript 162 파일</div>
+      </div>
+      <div>
+        <div class="n">177<span class="unit">커밋</span></div>
+        <div class="l">22일간</div>
+        <div class="s">일 평균 8건</div>
+      </div>
+    </div>
+
+    <div class="panel tint" style="margin-top:var(--s7)">
+      <span class="kicker">작업 규율</span>
+      <p style="margin-top:var(--s3);color:var(--ink-700);line-height:1.7">
+        CI에 <code>|| true</code>를 쓰지 않습니다. 실패는 실패로 남깁니다.
+        이전 프로젝트에서 CI가 실패를 무시하도록 설정돼 회귀를 몇 주 동안 숨긴 적이 있었고,
+        그때부터 <strong>"통과한 것처럼 보이는 파이프라인"을 가장 큰 리스크</strong>로 봅니다.
+        코드 리뷰가 "없는 코드"를 잡지 못한다는 것도 같은 경험에서 배웠습니다 —
+        그래서 명세와 산출물을 별도로 대조하는 단계를 뒀습니다.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <strong>강지호</strong>
+      <div class="meta">
+        <a href="mailto:jihono55@gmail.com">jihono55@gmail.com</a>
+      </div>
+    </div>
+    <p class="note">
+      화면 캡쳐는 2026-08-25 운영 환경 실측입니다.
+      본문 수치(테스트·LOC·커밋)는 저장소에서 직접 계측한 값입니다.
+    </p>
+  </div>
+</footer>
+
+<div class="pf-foot">
+  <div class="pf-foot__in">
+    <nav class="pf-pager" aria-label="프로젝트 이동">
+      <a href="finple.html"><span class="pf-pager__k">← 이전</span><span class="pf-pager__v">FinPle — 청소년 모의투자 플랫폼</span></a>
+      <a class="is-next" href="ai-beta-tester.html"><span class="pf-pager__k">다음 →</span><span class="pf-pager__v">AI 베타테스터 · 커뮤니티 다이제스트</span></a>
+    </nav>
+    <div class="pf-foot__meta">
+      <span>© 2026 강지호 · Kang Ji Ho</span>
+      <a href="mailto:jihono55@gmail.com">jihono55@gmail.com</a>
+      <a href="https://github.com/StockHedge" target="_blank" rel="noopener">github.com/StockHedge</a>
+      <span class="pf-sp">본문 수치는 저장소·운영 데이터 실측값입니다</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

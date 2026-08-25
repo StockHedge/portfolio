@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FinPle — 청소년 모의투자·금융교육 플랫폼 | 강지호 포트폴리오</title>
+<meta name="description" content="만 14세 이상 청소년을 위한 모의투자·금융교육 플랫폼 FinPle. 기획부터 배포·운영까지 1인 개발. FastAPI · Expo · Fly.io · Neon PostgreSQL.">
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/Pretendard-400.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/Pretendard-700.woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/shell.css">
+<style>
+/* ─────────────────────────────────────────────────────────────
+   FONT — Pretendard (KS X 1001 subset)
+   ───────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   TOKENS
+   근거: docs/PROJECT_STATUS.md §8 — brand accent Toss Blue #0064FF
+        단일 사용, 그라데이션 금지. 중성색은 blue-tinted.
+   ───────────────────────────────────────────────────────────── */
+:root{
+  /* accent */
+  --blue:        #0064FF;
+  --blue-hover:  #0053D6;
+  --blue-lit:    #3182F6;   /* 어두운 배경용 — 채도 낮춤 */
+  --blue-wash:   #E8F3FF;
+
+  /* ink (light surface) */
+  --ink:         #191F28;
+  --ink-2:       #333D4B;
+  --ink-3:       #4E5968;
+  --ink-4:       #65707D;
+
+  /* surface (light) */
+  --paper:       #FFFFFF;
+  --paper-2:     #F7F8FA;
+  --paper-3:     #F0F2F5;
+  --line:        #E5E8EB;
+  --line-2:      #D1D6DB;
+
+  /* night surface — 앱 다크 모드 서피스와 같은 계열 */
+  --night:       #0B1220;
+  --night-2:     #131B2C;
+  --night-3:     #1C2639;
+  --night-line:  #27334A;
+  --night-ink:   #EAEEF5;
+  --night-ink-2: #A9B5C9;
+
+  /* semantic — 한국 증시 컨벤션 (상승·매수 = 빨강) */
+  --up:          #F04452;
+  --down:        #3182F6;
+  --coin:        #FFC94D;
+  --sprout:      #22C55E;
+
+  /* spacing scale — 4px 그리드 */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px;
+  --s6:32px; --s7:48px; --s8:64px; --s9:96px; --s10:128px;
+
+  --r-sm:8px; --r-md:14px; --r-lg:20px; --r-xl:28px;
+
+  --shell: 1200px;
+  --gutter: clamp(20px, 5vw, 64px);
+
+  --dur: 180ms;
+  --ease: cubic-bezier(.2,.7,.3,1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--pf-sans);
+  font-size:16px;
+  line-height:1.62;
+  font-weight:400;
+  letter-spacing:-0.01em;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(0,100,255,.28);
+  transition:border-color var(--dur) var(--ease),color var(--dur) var(--ease)}
+a:hover{color:var(--blue-hover);border-bottom-color:var(--blue-hover)}
+a:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:2px}
+:where(h1,h2,h3,h4,p,ul,ol,dl,figure){margin:0}
+ul{padding:0;list-style:none}
+
+/* ── type ── */
+.display{
+  font-size:clamp(3rem,1.4rem + 6.6vw,6.75rem);
+  line-height:.94; font-weight:800; letter-spacing:-0.045em;
+}
+.h2{
+  font-size:clamp(1.75rem,1.15rem + 2.1vw,2.875rem);
+  line-height:1.14; font-weight:800; letter-spacing:-0.032em;
+}
+.h3{font-size:1.1875rem;line-height:1.34;font-weight:700;letter-spacing:-0.022em}
+.h4{font-size:1rem;line-height:1.4;font-weight:700;letter-spacing:-0.018em}
+.lead{font-size:clamp(1.0625rem,.98rem + .35vw,1.25rem);line-height:1.62;color:var(--ink-3)}
+.small{font-size:.875rem;line-height:1.56}
+.eyebrow{
+  font-size:.75rem;font-weight:600;letter-spacing:.14em;line-height:1.4;
+  color:var(--blue);text-transform:uppercase;
+}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+
+/* ── layout ── */
+.shell{max-width:var(--shell);margin-inline:auto;padding-inline:var(--gutter)}
+.band{padding-block:clamp(56px,7vw,var(--s9))}
+.band--paper{background:var(--paper)}
+.band--tint{background:var(--paper-2)}
+.band--night{background:var(--night);color:var(--night-ink)}
+.band--night .h2,.band--night .h3{color:var(--night-ink)}
+.band--night .eyebrow{color:var(--blue-lit)}
+
+.band-head{max-width:62ch;margin-bottom:clamp(32px,4vw,var(--s7))}
+.band-head .eyebrow{display:block;margin-bottom:var(--s3)}
+.band-head .h2{margin-bottom:var(--s4)}
+.band--night .band-head .lead{color:var(--night-ink-2)}
+
+/* ═══════════════ HERO ═══════════════ */
+.hero{background:var(--night);color:var(--night-ink);position:relative;overflow:hidden}
+.hero::after{ /* 코니 민트 halo — 마스코트 팔레트(#E7FAEC)에서 도출 */
+  content:'';position:absolute;inline-size:520px;block-size:520px;border-radius:50%;
+  background:rgba(49,130,246,.13);filter:blur(90px);
+  inset-block-start:-160px;inset-inline-end:-120px;pointer-events:none;
+}
+.hero__inner{
+  position:relative;z-index:1;
+  padding-block:clamp(56px,7vw,112px) clamp(48px,6vw,88px);
+  display:grid;gap:clamp(40px,5vw,72px);
+  grid-template-columns:minmax(0,1fr);
+}
+@media (min-width:1000px){
+  .hero__inner{grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);align-items:center}
+}
+.wordmark{display:flex;align-items:center;gap:14px;margin-bottom:var(--s5)}
+.wordmark svg{inline-size:44px;block-size:44px;flex:none}
+.wordmark b{font-size:1.375rem;font-weight:800;letter-spacing:-0.03em}
+.wordmark span{font-size:.8125rem;color:var(--night-ink-2);letter-spacing:.02em}
+
+.hero .display{color:#fff;margin-bottom:var(--s4)}
+.hero__slogan{
+  font-size:clamp(1.25rem,1rem + 1.1vw,1.75rem);font-weight:700;letter-spacing:-0.03em;
+  color:var(--blue-lit);margin-bottom:var(--s5);line-height:1.3;
+}
+.hero__lead{color:var(--night-ink-2);max-width:46ch;font-size:1.0625rem;line-height:1.68}
+
+.hero__meta{
+  display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);
+  margin-top:var(--s6);padding-top:var(--s5);border-top:1px solid var(--night-line);
+}
+.hero__meta div{min-width:0}
+.hero__meta dt{font-size:.6875rem;font-weight:600;letter-spacing:.1em;color:#7A899F;margin-bottom:2px}
+.hero__meta dd{margin:0;font-size:.9375rem;font-weight:600;color:var(--night-ink)}
+.status{display:inline-flex;align-items:center;gap:7px}
+.status::before{
+  content:'';inline-size:7px;block-size:7px;border-radius:50%;
+  background:var(--sprout);box-shadow:0 0 0 3px rgba(34,197,94,.2);
+}
+
+/* phones */
+.fan{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:0;
+  min-block-size:clamp(340px,44vw,520px)}
+.fan figure{
+  margin:0;position:relative;inline-size:clamp(132px,17.5vw,208px);flex:none;
+  border-radius:clamp(14px,1.6vw,22px);overflow:hidden;
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 24px 60px -18px rgba(0,0,0,.75), 0 4px 14px rgba(0,0,0,.4);
+  background:var(--night-2);
+}
+.fan figure:nth-child(1){transform:rotate(-7deg) translateY(18px);margin-inline-end:-6%;z-index:1}
+.fan figure:nth-child(2){z-index:3;transform:translateY(-14px)}
+.fan figure:nth-child(3){transform:rotate(7deg) translateY(18px);margin-inline-start:-6%;z-index:2}
+.fan img{inline-size:100%;block-size:auto}
+
+/* ═══════════════ TICKER — 시그니처 장치 ═══════════════
+   앱의 TickerBar(고정 다크 스트립)를 포트폴리오 지표 운반체로 전용.  */
+.ticker{
+  background:var(--night-2);
+  border-block:1px solid var(--night-line);
+  overflow-x:auto;overscroll-behavior-x:contain;
+  scrollbar-width:thin;
+}
+.ticker ul{
+  display:flex;align-items:stretch;
+  min-inline-size:max-content;margin-inline:auto;
+  padding-inline:var(--gutter);
+}
+.ticker li{
+  display:flex;flex-direction:column;justify-content:center;gap:2px;
+  padding:14px var(--s5);white-space:nowrap;
+  border-inline-start:1px solid var(--night-line);
+}
+.ticker li:first-child{border-inline-start:0}
+.ticker__k{font-size:.6875rem;font-weight:600;letter-spacing:.09em;color:#7A899F}
+.ticker__v{font-size:1.0625rem;font-weight:800;letter-spacing:-0.02em;color:var(--night-ink)}
+.ticker__v em{font-style:normal;font-size:.75rem;font-weight:600;color:var(--night-ink-2);margin-inline-start:4px}
+.ticker__v--pass{color:var(--sprout)}
+
+/* ═══════════════ 개요 ═══════════════ */
+.overview{display:grid;gap:clamp(32px,4vw,var(--s8));align-items:start}
+@media (min-width:900px){.overview{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}}
+.prose p{max-width:60ch;color:var(--ink-3);margin-bottom:var(--s4)}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--ink);font-weight:700}
+.prose .q{
+  display:block;margin:var(--s5) 0;padding-inline-start:var(--s4);
+  border-inline-start:3px solid var(--blue);
+  font-size:1.0625rem;font-weight:600;color:var(--ink);line-height:1.55;letter-spacing:-0.02em;
+}
+
+.facts{border-top:2px solid var(--ink);padding-top:var(--s4)}
+.facts div{
+  display:grid;grid-template-columns:6.5rem minmax(0,1fr);gap:var(--s3);
+  padding-block:11px;border-bottom:1px solid var(--line);
+}
+.facts dt{font-size:.8125rem;font-weight:600;color:var(--ink-4);letter-spacing:.01em}
+.facts dd{margin:0;font-size:.9375rem;font-weight:600;color:var(--ink);min-width:0;overflow-wrap:anywhere}
+.facts dd span{display:block;font-weight:400;font-size:.8125rem;color:var(--ink-4);margin-top:1px}
+
+/* ═══════════════ 아키텍처 ═══════════════ */
+.diagram{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(16px,2.4vw,var(--s6));overflow-x:auto;
+}
+.diagram svg{inline-size:100%;min-inline-size:720px;block-size:auto;display:block}
+
+/* ═══════════════ 스택 ═══════════════ */
+.stack{display:grid;gap:var(--s5)}
+@media (min-width:640px){.stack{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:1000px){.stack{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.stack section{border-top:2px solid var(--ink);padding-top:var(--s4)}
+.stack h3{font-size:.9375rem;font-weight:700;letter-spacing:-0.015em;margin-bottom:var(--s3)}
+.stack li{
+  display:flex;justify-content:space-between;gap:var(--s3);
+  padding-block:7px;border-bottom:1px solid var(--line);
+  font-size:.875rem;color:var(--ink-3);
+}
+.stack li b{font-weight:600;color:var(--ink-2);min-width:0}
+.stack li span{color:var(--ink-4);text-align:end;white-space:nowrap;font-size:.8125rem}
+
+/* ═══════════════ 화면 ═══════════════ */
+.screens{display:grid;gap:clamp(24px,3vw,var(--s6))}
+@media (min-width:600px){.screens{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:1000px){.screens{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.screens figure{margin:0;break-inside:avoid}
+.screens .frame{
+  border-radius:clamp(16px,1.8vw,24px);overflow:hidden;
+  border:1px solid var(--night-line);
+  box-shadow:0 20px 44px -20px rgba(0,0,0,.8);
+  background:var(--night-2);
+}
+.screens figcaption{padding-top:var(--s4)}
+.screens .h4{margin-bottom:5px}
+.screens p{font-size:.875rem;line-height:1.58;color:var(--night-ink-2);max-width:38ch}
+.screens .tag{
+  display:inline-block;margin-top:10px;padding:3px 9px;border-radius:999px;
+  background:rgba(49,130,246,.14);border:1px solid rgba(49,130,246,.3);
+  font-size:.6875rem;font-weight:600;letter-spacing:.02em;color:#8FBEFF;
+}
+
+/* ═══════════════ 엔지니어링 카드 ═══════════════ */
+.cards{display:grid;gap:var(--s4)}
+@media (min-width:760px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.card{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:clamp(20px,2.2vw,var(--s6));break-inside:avoid;
+}
+.card__n{
+  font-size:.6875rem;font-weight:800;letter-spacing:.12em;color:var(--blue);
+  display:block;margin-bottom:10px;
+}
+.card .h3{margin-bottom:var(--s3)}
+.card p{font-size:.9375rem;color:var(--ink-3);margin-bottom:var(--s3)}
+.card p:last-of-type{margin-bottom:0}
+.card dl{margin-top:var(--s4);padding-top:var(--s3);border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5)}
+.card dl div{min-width:0}
+.card dt{font-size:.6875rem;font-weight:600;letter-spacing:.08em;color:var(--ink-4)}
+.card dd{margin:0;font-size:.9375rem;font-weight:700;color:var(--ink);letter-spacing:-0.015em}
+code{
+  font-family:var(--pf-mono);
+  font-size:.8125em;background:var(--paper-3);border:1px solid var(--line);
+  border-radius:5px;padding:1px 5px;color:var(--ink-2);overflow-wrap:anywhere;
+}
+.band--night code{background:rgba(255,255,255,.07);border-color:var(--night-line);color:#C8D4E6}
+
+/* ═══════════════ 디버깅 사례 ═══════════════ */
+.bugs{border-top:2px solid var(--ink)}
+.bug{
+  display:grid;gap:var(--s3) var(--s5);padding-block:var(--s5);
+  border-bottom:1px solid var(--line-2);break-inside:avoid;
+}
+@media (min-width:860px){
+  .bug{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) minmax(0,1.25fr);align-items:start}
+}
+.bug__col > span{
+  display:block;font-size:.6875rem;font-weight:600;letter-spacing:.1em;
+  color:var(--ink-4);margin-bottom:6px;
+}
+.bug__col p{font-size:.9375rem;line-height:1.58;color:var(--ink-3)}
+.bug__col--sym p{font-weight:700;color:var(--ink);letter-spacing:-0.015em}
+.bug__col--fix p{color:var(--ink-2)}
+.bug__col--fix span{color:var(--blue)}
+
+/* ═══════════════ 제품 판단 ═══════════════ */
+.calls{display:grid;gap:var(--s4)}
+@media (min-width:700px){.calls{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.call{
+  padding:var(--s5);border-radius:var(--r-md);
+  background:var(--blue-wash);border:1px solid #CFE3FF;break-inside:avoid;
+}
+.call h3{font-size:1rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:6px;color:#06306E}
+.call p{font-size:.9375rem;line-height:1.58;color:#204072}
+
+/* ═══════════════ 지표 ═══════════════ */
+.metrics{display:grid;gap:var(--s5) var(--s4)}
+@media (min-width:520px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:900px){.metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.metric{border-top:1px solid var(--night-line);padding-top:var(--s4)}
+.metric b{
+  display:block;font-size:clamp(2rem,1.3rem + 2.4vw,3.125rem);font-weight:800;
+  letter-spacing:-0.04em;line-height:1;color:#fff;margin-bottom:8px;
+}
+.metric b em{font-style:normal;font-size:.4em;font-weight:700;color:var(--blue-lit);margin-inline-start:4px}
+.metric span{display:block;font-size:.9375rem;font-weight:600;color:var(--night-ink);margin-bottom:3px}
+.metric small{display:block;font-size:.8125rem;line-height:1.5;color:var(--night-ink-2)}
+
+.verify{
+  margin-top:clamp(32px,4vw,var(--s7));padding-top:var(--s5);
+  border-top:1px solid var(--night-line);
+  display:grid;gap:var(--s4);
+}
+@media (min-width:820px){.verify{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.verify div span{display:block;font-size:.6875rem;font-weight:600;letter-spacing:.1em;color:#7A899F;margin-bottom:6px}
+.verify div p{font-size:.875rem;line-height:1.58;color:var(--night-ink-2)}
+.verify div p b{color:var(--night-ink);font-weight:600}
+
+/* ═══════════════ FOOTER ═══════════════ */
+.foot{background:var(--night);color:var(--night-ink-2);border-top:1px solid var(--night-line)}
+.foot__inner{
+  padding-block:var(--s7);display:flex;flex-wrap:wrap;
+  gap:var(--s5);justify-content:space-between;align-items:flex-end;
+}
+.foot a{color:var(--blue-lit);border-bottom-color:rgba(49,130,246,.35)}
+.foot a:hover{color:#8FBEFF;border-bottom-color:#8FBEFF}
+.foot__links{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);font-size:.9375rem;font-weight:600}
+.foot__note{font-size:.8125rem;line-height:1.6;max-width:52ch}
+.foot__note b{color:var(--night-ink);font-weight:600}
+
+/* ═══════════════ MOTION ═══════════════ */
+@media (prefers-reduced-motion:no-preference){
+  .reveal{opacity:0;transform:translateY(14px);
+    transition:opacity 420ms var(--ease),transform 420ms var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  .fan figure{transition:transform var(--dur) var(--ease)}
+  .fan figure:hover{transform:translateY(-10px) rotate(0deg);z-index:4}
+}
+
+/* ═══════════════ PRINT (A4) ═══════════════
+   인쇄 폭은 A4(210mm) - 여백(20mm) = 190mm ≈ 718px.
+   화면용 브레이크포인트(900~1000px)가 전부 미달이라 그대로 두면 모든
+   그리드가 1열로 무너져 15쪽이 된다. 인쇄에서는 열 수를 명시로 되돌린다.
+   ═══════════════════════════════════════════ */
+@media print{
+  @page{size:A4;margin:10mm}
+  html,body{background:#fff}
+  body{font-size:9.5pt;line-height:1.5}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .reveal{opacity:1!important;transform:none!important}
+  a{border-bottom:none}
+
+  .band{padding-block:11mm}
+  .band-head{margin-bottom:7mm;max-width:none}
+  .display{font-size:38pt;line-height:.96}
+  .h2{font-size:17pt}
+  .h3{font-size:11pt}
+  .lead{font-size:10pt}
+
+  /* 히어로 */
+  /* fr 트랙의 기본 최소값은 min-content 다. 폰 3장(flex:none)이 오른쪽 열의
+     min-content 를 밀어올려 왼쪽 열을 짜내므로 minmax(0,...) 로 고정한다. */
+  .hero__inner{grid-template-columns:minmax(0,100fr) minmax(0,80fr);gap:10mm;padding-block:10mm;align-items:center}
+  .hero::after{display:none}
+  .hero__lead{font-size:9.5pt}
+  .fan{min-block-size:0}
+  .fan figure{inline-size:29mm;box-shadow:none;border-radius:3mm}
+
+  /* 시그니처 티커 — 인쇄에서는 줄바꿈 */
+  .ticker{overflow:visible}
+  .ticker ul{flex-wrap:wrap;min-inline-size:0}
+  .ticker li{padding:8px 14px}
+
+  /* 화면 브레이크포인트 복원 */
+  .overview{grid-template-columns:1.3fr 1fr;gap:9mm}
+  .stack{grid-template-columns:repeat(2,1fr);gap:6mm 9mm}
+  .screens{grid-template-columns:repeat(3,1fr);gap:6mm}
+  .screens .frame{box-shadow:none}
+  .screens p{font-size:8.5pt;max-width:none}
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .card{padding:5mm}
+  .card p{font-size:9pt}
+  .calls{grid-template-columns:repeat(2,1fr)}
+  .bug{grid-template-columns:1fr 1.2fr 1.2fr;gap:5mm;padding-block:4mm}
+  .bug__col p{font-size:8.5pt;line-height:1.5}
+  .metrics{grid-template-columns:repeat(4,1fr);gap:6mm}
+  .metric b{font-size:22pt}
+  .metric small{font-size:8pt}
+  .verify{grid-template-columns:repeat(3,1fr)}
+  .verify div p{font-size:8.5pt}
+  .diagram{padding:4mm}
+  .diagram svg{min-inline-size:0}
+  .foot__inner{padding-block:8mm}
+
+  /* 쪽 나눔 */
+  .band,.card,.bug,.call,.screens figure,.metric,.stack section{break-inside:avoid}
+  #screens,#engineering,#debugging,#quality{break-before:page}
+}
+</style>
+</head>
+<body>
+<nav class="pf-nav" aria-label="포트폴리오 내비게이션">
+  <div class="pf-nav__in">
+    <a class="pf-nav__brand" href="index.html"><span class="pf-nav__mark" aria-hidden="true"></span>강지호&nbsp;<b>Portfolio</b></a>
+    <ul class="pf-nav__list">
+    <li><a href="index.html">프로필</a></li>
+    <li><a href="aiwebbuilder.html">AI 웹빌더</a></li>
+    <li><a href="finple.html" aria-current="page">FinPle</a></li>
+    <li><a href="marketing-hub.html">마케팅 허브</a></li>
+    <li><a href="ai-beta-tester.html">AI 베타테스터</a></li>
+    </ul>
+    <a class="pf-nav__cta" href="mailto:jihono55@gmail.com">연락하기</a>
+  </div>
+</nav>
+
+
+<!-- ══════════════════════════ HERO ══════════════════════════ -->
+<header class="hero">
+  <div class="shell hero__inner">
+    <div>
+      <div class="wordmark">
+        <!-- 코니(Coni) — 앱의 마스코트 SVG(src/components/Mascot/Pinpi.tsx) 원본 좌표 재현 -->
+        <svg viewBox="0 0 100 100" role="img" aria-label="FinPle 마스코트 코니">
+          <path d="M 50 26 L 50 14" stroke="#22C55E" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 50 16 Q 51 8 62 6 Q 61 16 51 18 Z" fill="#22C55E"/>
+          <path d="M 50 20 Q 49 13 40 12 Q 41 20 49 21 Z" fill="#34D782"/>
+          <circle cx="50" cy="56" r="30" fill="#FFC94D" stroke="#E8A614" stroke-width="3.5"/>
+          <circle cx="50" cy="56" r="21" fill="none" stroke="#E8A614" stroke-width="1.8" opacity=".55"/>
+          <circle cx="36" cy="61" r="4.5" fill="#FF9C6B" opacity=".55"/>
+          <circle cx="64" cy="61" r="4.5" fill="#FF9C6B" opacity=".55"/>
+          <g fill="none" stroke="#7A4A00" stroke-width="2.5" stroke-linecap="round">
+            <path d="M 36 52 Q 40 48 44 52"/>
+            <path d="M 56 52 Q 60 48 64 52"/>
+            <path d="M 43 63 Q 50 70 57 63" fill="#7A4A00"/>
+          </g>
+        </svg>
+        <div>
+          <b>FinPle</b>
+          <span>&nbsp;· 핀쉐어 FinShare</span>
+        </div>
+      </div>
+
+      <h1 class="display">청소년<br>모의투자<br>플랫폼</h1>
+      <p class="hero__slogan">투자, 배움부터.</p>
+      <p class="hero__lead">
+        만 14세 이상 청소년이 실제 돈을 잃지 않고 투자를 배우는 모의투자·금융교육 앱.
+        기획·백엔드·앱·인프라·QA 전 영역을 혼자 만들어 운영 배포까지 마쳤습니다.
+      </p>
+
+      <dl class="hero__meta">
+        <div><dt>기간</dt><dd class="num">2026.03 – 2026.08</dd></div>
+        <div><dt>역할</dt><dd>1인 개발 (Full-stack)</dd></div>
+        <div><dt>상태</dt><dd><span class="status">운영 배포 중</span></dd></div>
+      </dl>
+    </div>
+
+    <div class="fan" aria-label="FinPle 앱 화면 3종">
+      <figure><img src="assets/finple/edu-tree.webp" alt="FinPle 교육 트리 화면" width="760" height="1554" loading="eager"></figure>
+      <figure><img src="assets/finple/home.webp" alt="FinPle 홈 화면 — 총 자산과 지수 위젯" width="760" height="1554" loading="eager"></figure>
+      <figure><img src="assets/finple/stock-detail.webp" alt="FinPle 종목 상세 화면" width="760" height="1554" loading="eager"></figure>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════ TICKER (시그니처) ══════════════════════════ -->
+<nav class="ticker" aria-label="프로젝트 규모 지표">
+  <ul>
+    <li><span class="ticker__k">CODE</span><span class="ticker__v num">29,714<em>줄</em></span></li>
+    <li><span class="ticker__k">COMMITS</span><span class="ticker__v num">162</span></li>
+    <li><span class="ticker__k">MERGED PR</span><span class="ticker__v num">73</span></li>
+    <li><span class="ticker__k">API</span><span class="ticker__v num">80<em>엔드포인트</em></span></li>
+    <li><span class="ticker__k">MODELS</span><span class="ticker__v num">25<em>테이블</em></span></li>
+    <li><span class="ticker__k">MIGRATIONS</span><span class="ticker__v num">26</span></li>
+    <li><span class="ticker__k">SCREENS</span><span class="ticker__v num">25</span></li>
+    <li><span class="ticker__k">PYTEST</span><span class="ticker__v ticker__v--pass num">195 PASS</span></li>
+    <li><span class="ticker__k">TSC</span><span class="ticker__v ticker__v--pass num">0 ERROR</span></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════ 개요 ══════════════════════════ -->
+<section class="band band--paper" id="overview">
+  <div class="shell">
+    <div class="band-head reveal">
+      <span class="eyebrow">Overview</span>
+      <h2 class="h2">교육을 통과해야 거래가 열린다</h2>
+      <p class="lead">모의투자를 교육의 보상이 아니라 교육의 연장선에 두기 위해, 제품 구조와 체결 규칙을 그렇게 설계했습니다.</p>
+    </div>
+
+    <div class="overview">
+      <div class="prose reveal">
+        <p>
+          청소년 금융교육은 대체로 <strong>읽고 끝난다</strong>. 반대로 실전 투자 앱은 미성년자에게 열려 있지 않고,
+          열려 있더라도 손실 위험을 그대로 진다. 배움과 실행 사이가 비어 있다.
+        </p>
+        <span class="q">FinPle은 그 사이를 메운다 — 배운 것을 실제 시장 데이터 위에서 위험 없이 실행해 보게 한다.</span>
+        <p>
+          교육 트리(Level 0–20)를 통과하면 거래가 열리고, 체결은 <strong>실제 KRX 종목 2,770개</strong>의 시세로 돈다.
+          수수료 0.015%, 매도 거래세 0.23%, 슬리피지 허용 0.5%, 주문 가능 시간까지 실제와 같은 규칙을 적용해
+          &lsquo;장난감 계좌&rsquo;와 구분했다.
+        </p>
+        <p>
+          투자 결과가 아니라 <strong>투자 습관</strong>을 보상한다. 수익률 보상 미션은 은퇴시키고
+          최대낙폭 관리·분산 보유 미션으로 대체해, 수익률을 좇는 유인을 제품에서 걷어냈다.
+        </p>
+      </div>
+
+      <dl class="facts reveal">
+        <div><dt>기간</dt><dd class="num">2026.03.15 – 2026.08.24<span>약 5개월 · 커밋 162건</span></dd></div>
+        <div><dt>역할</dt><dd>1인 개발<span>기획 · 백엔드 · 앱 · 인프라 · QA</span></dd></div>
+        <div><dt>대상</dt><dd>만 14세 이상 청소년<span>중·고교 5,704곳 데이터 내장</span></dd></div>
+        <div><dt>백엔드</dt><dd><a href="https://finple-backend.fly.dev" target="_blank" rel="noopener">finple-backend.fly.dev</a><span>Fly.io nrt · 운영 중</span></dd></div>
+        <div><dt>웹</dt><dd><a href="https://finple.pages.dev" target="_blank" rel="noopener">finple.pages.dev</a><span>Cloudflare Pages</span></dd></div>
+        <div><dt>저장소</dt><dd>StockHedge/YouthInvestment<span>GitHub · private</span></dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 아키텍처 ══════════════════════════ -->
+<section class="band band--tint" id="architecture">
+  <div class="shell">
+    <div class="band-head reveal">
+      <span class="eyebrow">Architecture</span>
+      <h2 class="h2">시스템 구성</h2>
+      <p class="lead">단일 FastAPI 서비스가 도메인 로직을 전담하고, 외부 시세·인증·발송은 전부 실패해도 서비스가 죽지 않도록 graceful degrade 시켰습니다.</p>
+    </div>
+
+    <div class="diagram reveal">
+      <svg viewBox="0 0 1120 470" role="img" aria-labelledby="archTitle archDesc">
+        <title id="archTitle">FinPle 시스템 아키텍처</title>
+        <desc id="archDesc">Expo 앱과 Cloudflare Pages 웹이 Fly.io의 FastAPI 서비스를 호출하고, FastAPI는 Neon PostgreSQL과 Redis를 사용하며 KIS·Yahoo·Kakao·NCP SENS·Telegram 외부 서비스와 연동한다. GitHub Actions가 배포와 종가 수집을 자동화한다.</desc>
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#6E7987"/>
+          </marker>
+          <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#0064FF"/>
+          </marker>
+        </defs>
+        <g font-family="Pretendard, sans-serif">
+
+          <!-- band labels -->
+          <g font-size="11" font-weight="600" fill="#5D6873" letter-spacing="1.4">
+            <text x="0" y="24">CLIENT</text>
+            <text x="0" y="180">APPLICATION</text>
+            <text x="0" y="352">DATA</text>
+            <text x="838" y="24">EXTERNAL</text>
+          </g>
+
+          <!-- CLIENT -->
+          <g>
+            <rect x="0" y="40" width="360" height="72" rx="12" fill="#fff" stroke="#D1D6DB"/>
+            <text x="20" y="70" font-size="15" font-weight="700" fill="#191F28">Expo 앱 · React Native</text>
+            <text x="20" y="92" font-size="12.5" fill="#4E5968">iOS · Android · Web &nbsp;|&nbsp; 화면 25 · TypeScript 16,995줄</text>
+
+            <rect x="384" y="40" width="300" height="72" rx="12" fill="#fff" stroke="#D1D6DB"/>
+            <text x="404" y="70" font-size="15" font-weight="700" fill="#191F28">Cloudflare Pages</text>
+            <text x="404" y="92" font-size="12.5" fill="#4E5968">expo export → finple.pages.dev</text>
+          </g>
+
+          <!-- APPLICATION -->
+          <rect x="0" y="196" width="684" height="118" rx="14" fill="#0064FF"/>
+          <text x="22" y="228" font-size="16" font-weight="800" fill="#fff">FastAPI 0.111 · Fly.io (nrt)</text>
+          <text x="22" y="250" font-size="12.5" fill="#F0F6FF">SQLAlchemy 2.x async · Alembic 26 · Python 12,719줄 · 엔드포인트 80</text>
+          <g font-size="12" font-weight="600" fill="#fff">
+            <rect x="22"  y="266" width="112" height="28" rx="7" fill="#000000" opacity=".18"/><text x="78"  y="285" text-anchor="middle">주문 체결 엔진</text>
+            <rect x="142" y="266" width="98"  height="28" rx="7" fill="#000000" opacity=".18"/><text x="191" y="285" text-anchor="middle">시세 파이프라인</text>
+            <rect x="248" y="266" width="98"  height="28" rx="7" fill="#000000" opacity=".18"/><text x="297" y="285" text-anchor="middle">미션 · 포인트</text>
+            <rect x="354" y="266" width="84"  height="28" rx="7" fill="#000000" opacity=".18"/><text x="396" y="285" text-anchor="middle">교육 · 퀴즈</text>
+            <rect x="446" y="266" width="98"  height="28" rx="7" fill="#000000" opacity=".18"/><text x="495" y="285" text-anchor="middle">월간 랭킹</text>
+            <rect x="552" y="266" width="110" height="28" rx="7" fill="#000000" opacity=".18"/><text x="607" y="285" text-anchor="middle">운영자 콘솔</text>
+          </g>
+
+          <!-- DATA -->
+          <g>
+            <rect x="0" y="368" width="330" height="72" rx="12" fill="#fff" stroke="#D1D6DB"/>
+            <text x="20" y="398" font-size="15" font-weight="700" fill="#191F28">Neon PostgreSQL 15</text>
+            <text x="20" y="420" font-size="12.5" fill="#4E5968">Singapore · 테이블 25 · 테스트는 SQLite 자동 분기</text>
+
+            <rect x="354" y="368" width="330" height="72" rx="12" fill="#fff" stroke="#D1D6DB"/>
+            <text x="374" y="398" font-size="15" font-weight="700" fill="#191F28">Redis 7</text>
+            <text x="374" y="420" font-size="12.5" fill="#4E5968">시세 캐시 10s TTL · WS 리더 락 · 레이트리밋</text>
+          </g>
+
+          <!-- EXTERNAL -->
+          <g>
+            <rect x="838" y="40" width="282" height="400" rx="14" fill="#fff" stroke="#D1D6DB" stroke-dasharray="5 4"/>
+            <g font-size="13" font-weight="600" fill="#191F28">
+              <text x="860" y="76">한국투자증권 KIS</text>
+              <text x="860" y="146">Yahoo Finance</text>
+              <text x="860" y="216">Kakao OAuth</text>
+              <text x="860" y="286">NCP SENS</text>
+              <text x="860" y="356">Telegram Bot</text>
+            </g>
+            <g font-size="11.5" fill="#65707D">
+              <text x="860" y="96">REST 현재가 + WebSocket 실시간</text>
+              <text x="860" y="166">KOSPI · KOSDAQ · NASDAQ 지수</text>
+              <text x="860" y="236">소셜 로그인</text>
+              <text x="860" y="306">가입 SMS 인증</text>
+              <text x="860" y="376">운영자 알림 (가입 · 교환 신청)</text>
+            </g>
+            <g stroke="#E5E8EB"><path d="M860 112 H1100"/><path d="M860 182 H1100"/><path d="M860 252 H1100"/><path d="M860 322 H1100"/></g>
+          </g>
+
+          <!-- arrows -->
+          <g stroke="#6E7987" stroke-width="1.6" fill="none">
+            <path d="M180 116 V192" marker-end="url(#ar)"/>
+            <path d="M534 116 V192" marker-end="url(#ar)"/>
+            <path d="M165 318 V364" marker-end="url(#ar)"/>
+            <path d="M519 318 V364" marker-end="url(#ar)"/>
+          </g>
+          <g stroke="#0064FF" stroke-width="1.6" fill="none">
+            <path d="M688 240 H834" marker-end="url(#arb)"/>
+          </g>
+          <text x="196" y="160" font-size="11.5" font-weight="600" fill="#65707D">HTTPS · JWT (401 → refresh 자동 재시도)</text>
+          <text x="700" y="230" font-size="11.5" font-weight="600" fill="#0064FF">실패 시 graceful degrade</text>
+
+          <!-- CI -->
+          <rect x="708" y="368" width="112" height="72" rx="12" fill="#191F28"/>
+          <text x="764" y="396" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">GitHub</text>
+          <text x="764" y="412" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">Actions</text>
+          <text x="764" y="430" font-size="10.5" fill="#A9B5C9" text-anchor="middle">배포 · EOD 수집</text>
+          <g stroke="#6E7987" stroke-width="1.6" fill="none" stroke-dasharray="4 3">
+            <path d="M708 392 H690 V318" marker-end="url(#ar)"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 스택 ══════════════════════════ -->
+<section class="band band--paper" id="stack">
+  <div class="shell">
+    <div class="band-head reveal">
+      <span class="eyebrow">Stack</span>
+      <h2 class="h2">기술 스펙</h2>
+    </div>
+
+    <div class="stack reveal">
+      <section>
+        <h3>백엔드</h3>
+        <ul>
+          <li><b>FastAPI</b><span>0.111</span></li>
+          <li><b>SQLAlchemy</b><span>2.x async</span></li>
+          <li><b>Alembic</b><span>마이그 26</span></li>
+          <li><b>Pydantic</b><span>스키마 검증</span></li>
+          <li><b>PyJWT</b><span>2.10.1</span></li>
+          <li><b>bcrypt</b><span>4.2.1</span></li>
+          <li><b>asyncpg</b><span>async 드라이버</span></li>
+          <li><b>Python</b><span>3.11</span></li>
+        </ul>
+      </section>
+      <section>
+        <h3>프론트엔드</h3>
+        <ul>
+          <li><b>Expo SDK</b><span>55</span></li>
+          <li><b>React Native</b><span>0.83.6</span></li>
+          <li><b>React</b><span>19</span></li>
+          <li><b>TypeScript</b><span>5.9 · 0 error</span></li>
+          <li><b>react-native-svg</b><span>차트 · 마스코트</span></li>
+          <li><b>safe-area-context</b><span>edge-to-edge</span></li>
+          <li><b>다크 모드</b><span>전 화면 대응</span></li>
+        </ul>
+      </section>
+      <section>
+        <h3>데이터 · 인프라</h3>
+        <ul>
+          <li><b>PostgreSQL</b><span>15 · Neon</span></li>
+          <li><b>SQLite</b><span>테스트 자동 분기</span></li>
+          <li><b>Redis</b><span>7</span></li>
+          <li><b>Fly.io</b><span>nrt (도쿄)</span></li>
+          <li><b>Cloudflare Pages</b><span>웹 배포</span></li>
+          <li><b>GitHub Actions</b><span>배포 · EOD 수집</span></li>
+          <li><b>Docker Compose</b><span>로컬 스택</span></li>
+        </ul>
+      </section>
+      <section>
+        <h3>품질</h3>
+        <ul>
+          <li><b>pytest</b><span>195 passed</span></li>
+          <li><b>asyncio_mode</b><span>auto</span></li>
+          <li><b>tsc strict</b><span>0 error</span></li>
+          <li><b>실기기 QA</b><span>Galaxy Note20</span></li>
+          <li><b>운영 E2E</b><span>전 플로우 완주</span></li>
+          <li><b>uiautomator2</b><span>QA 자동화</span></li>
+          <li><b>gitleaks</b><span>시크릿 차단</span></li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 화면 ══════════════════════════ -->
+<section class="band band--night" id="screens">
+  <div class="shell">
+    <div class="band-head reveal">
+      <span class="eyebrow">Screens</span>
+      <h2 class="h2">실제 앱 화면</h2>
+      <p class="lead">Galaxy Note20 실기기와 에뮬레이터에서 운영 백엔드에 붙여 캡처했습니다. 라이트·다크 모드를 전 화면에서 대응합니다.</p>
+    </div>
+
+    <div class="screens">
+      <figure class="reveal">
+        <div class="frame"><img src="assets/finple/home.webp" alt="홈 화면 — 총 자산 카드, KOSPI·KOSDAQ 지수 위젯, 미션과 포인트 요약" width="760" height="1554" loading="lazy"></div>
+        <figcaption>
+          <h3 class="h4">홈 — 자산 요약</h3>
+          <p>총자산·현금·주식 평가를 한 카드에 묶고, 지수 위젯은 전일 종가 대비로 티커바와 기준을 통일했습니다.</p>
+          <span class="tag">숫자 카운트업 · 실시간 지수</span>
+        </figcaption>
+      </figure>
+
+      <figure class="reveal">
+        <div class="frame"><img src="assets/finple/edu-tree.webp" alt="교육 트리 화면 — 지그재그로 배치된 레벨 노드와 진행률" width="760" height="1554" loading="lazy"></div>
+        <figcaption>
+          <h3 class="h4">교육 트리</h3>
+          <p>Level 0–20을 지그재그 노드로 배치해 진행 상태를 한눈에 보여줍니다. 퀴즈는 서버에서 자동 채점하고 XP를 적립합니다.</p>
+          <span class="tag">자동 채점 · XP · 진행률</span>
+        </figcaption>
+      </figure>
+
+      <figure class="reveal">
+        <div class="frame"><img src="assets/finple/stock-detail.webp" alt="종목 상세 화면 — 삼성전자 시세, 보유 현황, 차트 기간 선택" width="760" height="1554" loading="lazy"></div>
+        <figcaption>
+          <h3 class="h4">종목 상세</h3>
+          <p>시세·보유 현황·차트를 한 화면에 담고, 주문 가능 시간 밖이면 상단에 사유를 먼저 알립니다.</p>
+          <span class="tag">MA5/20/60 · 볼린저 · 캔들</span>
+        </figcaption>
+      </figure>
+
+      <figure class="reveal">
+        <div class="frame"><img src="assets/finple/orderbook.webp" alt="차트와 호가 화면 — 매도·매수 잔량이 좌우로 나뉜 호가창" width="760" height="1554" loading="lazy"></div>
+        <figcaption>
+          <h3 class="h4">차트 · 호가</h3>
+          <p>차트 크로스헤어는 웹 DOM API 대신 RN responder로 구현해 네이티브에서도 동작합니다. 호가를 탭하면 지정가로 들어갑니다.</p>
+          <span class="tag">크로스헤어 · 지정가 연동</span>
+        </figcaption>
+      </figure>
+
+      <figure class="reveal">
+        <div class="frame"><img src="assets/finple/mypage.webp" alt="마이페이지 화면 — 기프티콘 교환소, 미션, 트로피 캐비넷 등 메뉴" width="760" height="1554" loading="lazy"></div>
+        <figcaption>
+          <h3 class="h4">마이페이지</h3>
+          <p>포인트·배지·기프티콘 교환·예적금 시뮬레이션을 한 곳에 모았습니다. API 실패는 0원이 아니라 <code>—</code>와 복구 안내로 구분합니다.</p>
+          <span class="tag">포인트 원장 · 기프티콘 교환</span>
+        </figcaption>
+      </figure>
+
+      <figure class="reveal">
+        <div class="frame"><img src="assets/finple/login.webp" alt="로그인 화면 — 이메일·비밀번호 입력과 카카오 로그인 버튼" width="760" height="1554" loading="lazy"></div>
+        <figcaption>
+          <h3 class="h4">로그인</h3>
+          <p>이메일과 카카오 OAuth 두 경로. 액세스 토큰 만료는 인터셉터가 401을 잡아 재발급 후 원 요청을 재시도합니다.</p>
+          <span class="tag">JWT · 카카오 OAuth</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 엔지니어링 ══════════════════════════ -->
+<section class="band band--tint" id="engineering">
+  <div class="shell">
+    <div class="band-head reveal">
+      <span class="eyebrow">Engineering</span>
+      <h2 class="h2">핵심 구현</h2>
+      <p class="lead">모의투자라도 규칙이 실제와 다르면 배움이 왜곡됩니다. 체결·시세·보상·랭킹 네 축을 실제 시장 제약에 맞췄습니다.</p>
+    </div>
+
+    <div class="cards">
+      <article class="card reveal">
+        <span class="card__n">01 &nbsp;ORDER</span>
+        <h3 class="h3">주문 체결 엔진</h3>
+        <p>
+          시장가·지정가 주문을 받아 수수료와 세금을 실제 요율로 차감하고, 표시가와 체결가의 괴리가
+          허용치를 넘으면 체결을 거절합니다. 주문 가능 시간은 <strong>fail-closed</strong>가 기본값이라
+          설정이 비어 있으면 거래가 막히는 쪽으로 떨어집니다.
+        </p>
+        <p>
+          정합성 검증은 눈이 아니라 계산으로 했습니다 — 운영 계정으로 매수 5건을 체결한 뒤
+          수수료 372원을 포함한 총자산 9,994,628원이 장부와 일치하는지 검산했습니다.
+        </p>
+        <dl>
+          <div><dt>수수료</dt><dd class="num">0.015%</dd></div>
+          <div><dt>거래세</dt><dd class="num">0.23% <span style="font-size:.75rem;font-weight:600;color:var(--ink-4)">매도</span></dd></div>
+          <div><dt>슬리피지</dt><dd class="num">0.5%</dd></div>
+          <div><dt>주문 창</dt><dd class="num">08:00–20:00</dd></div>
+        </dl>
+      </article>
+
+      <article class="card reveal">
+        <span class="card__n">02 &nbsp;MARKET DATA</span>
+        <h3 class="h3">4단 폴백 시세 파이프라인</h3>
+        <p>
+          외부 시세는 언제든 끊깁니다. 그래서 단계마다 다음 소스로 떨어지도록 만들었습니다 —
+          <code>kis:price</code> 실시간 틱 → KIS REST 현재가 → <code>price_history</code> 최신 종가 →
+          <code>base_price</code>. 어느 단계에서 왔는지를 <strong>가격 출처(실시간/종가)로 화면에 명시</strong>합니다.
+        </p>
+        <p>
+          멀티 워커에서 WebSocket이 중복 구독되지 않도록 Redis 리더 락 <code>kis:ws:leader</code>로 단일 스트림을 보장하고,
+          10초 TTL 캐시로 표시가와 체결가가 벌어지지 않게 고정합니다. 종가는 GitHub Actions가 평일 16:30 KST에 수집합니다.
+        </p>
+        <dl>
+          <div><dt>종목</dt><dd class="num">2,770</dd></div>
+          <div><dt>캐시 TTL</dt><dd class="num">10s</dd></div>
+          <div><dt>EOD 수집</dt><dd class="num">평일 16:30</dd></div>
+        </dl>
+      </article>
+
+      <article class="card reveal">
+        <span class="card__n">03 &nbsp;GAMIFICATION</span>
+        <h3 class="h3">미션 · 포인트 · 기프티콘</h3>
+        <p>
+          거래·학습 이벤트가 발생하면 미션 엔진이 조건을 재평가하고, 달성분은 포인트 원장에 적립합니다.
+          포인트는 기프티콘으로 교환되고, 운영자는 신청을 <strong>취소·전액 환불</strong>할 수 있습니다.
+          재고는 <code>-1 = 무제한</code>, <code>0 = 품절</code> 계약으로 분리했습니다.
+        </p>
+        <p>
+          보상 설계 자체를 한 번 갈아엎었습니다. 수익률 보상 미션은 은퇴시키고 최대낙폭 15% 이내 유지·
+          3종목 동시 보유 같은 <strong>위험관리 미션으로 대체</strong>했습니다.
+        </p>
+        <dl>
+          <div><dt>미션</dt><dd class="num">7종 + 주간</dd></div>
+          <div><dt>교환</dt><dd>취소 · 환불 지원</dd></div>
+        </dl>
+      </article>
+
+      <article class="card reveal">
+        <span class="card__n">04 &nbsp;RANKING</span>
+        <h3 class="h3">스케줄러 없는 월간 랭킹</h3>
+        <p>
+          랭킹을 &lsquo;가입 후 누적&rsquo;에서 <strong>월간</strong>으로 바꾸면 매달 1일 KST에 기준을 초기화해야 합니다.
+          초기화 배치를 두는 대신, 집계 시점에 이번 달 기준 NAV가 없는 사용자를 멱등하게 일괄 INSERT하도록 만들었습니다.
+        </p>
+        <p>
+          결과적으로 <strong>스케줄러가 없어도 월 전환이 자동</strong>이고, 캐시 키에 월을 넣어 지난달 캐시는 자연 무효화됩니다.
+          죽은 경로였던 종전 TWR 계산은 제거했습니다.
+        </p>
+        <dl>
+          <div><dt>범위</dt><dd>전국 · 교내</dd></div>
+          <div><dt>학교</dt><dd class="num">5,704곳</dd></div>
+        </dl>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 디버깅 ══════════════════════════ -->
+<section class="band band--paper" id="debugging">
+  <div class="shell">
+    <div class="band-head reveal">
+      <span class="eyebrow">Debugging</span>
+      <h2 class="h2">근본 원인까지 내려간 결함</h2>
+      <p class="lead">증상을 가리는 대신 원인 계층까지 내려가 고친 사례입니다. 재현되지 않는 테스트 환경이 결함을 숨기고 있던 경우가 가장 많았습니다.</p>
+    </div>
+
+    <div class="bugs reveal">
+      <div class="bug">
+        <div class="bug__col bug__col--sym"><span>증상</span><p>모든 미션이 한 이벤트씩 늦게 달성 처리됨</p></div>
+        <div class="bug__col"><span>원인</span><p>운영 세션이 <code>autoflush=False</code>라 미션 평가 SELECT가 같은 트랜잭션의 pending 주문·포지션을 보지 못했다. 테스트 <code>conftest</code>는 autoflush 기본값이라 결함이 재현되지 않았다.</p></div>
+        <div class="bug__col bug__col--fix"><span>조치</span><p><code>_evaluate_codes</code> 진입 시 flush. 회귀 테스트를 <strong>운영과 동일한 세션 설정으로 재작성</strong>해 테스트가 결함을 잡도록 만들었다.</p></div>
+      </div>
+
+      <div class="bug">
+        <div class="bug__col bug__col--sym"><span>증상</span><p>운영 배포 후 미션 화면이 통째로 비어 있음</p></div>
+        <div class="bug__col"><span>원인</span><p>빈 DB 초기화 경로가 <code>create_all</code> + <code>alembic stamp head</code>였다. stamp는 스키마를 &lsquo;적용됨&rsquo;으로 표시만 하고, 마이그레이션 안의 데이터 시드는 실행하지 않는다.</p></div>
+        <div class="bug__col bug__col--fix"><span>조치</span><p>시드 상수를 로드해 멱등 반영하는 <code>seed_data_sync</code>를 release 커맨드에 넣었다. <strong>스키마와 시드의 책임을 분리</strong>한 것이 핵심.</p></div>
+      </div>
+
+      <div class="bug">
+        <div class="bug__col bug__col--sym"><span>증상</span><p>웹 배포판에서 아이콘이 전부 ☒로 렌더됨</p></div>
+        <div class="bug__col"><span>원인</span><p><code>wrangler pages deploy</code>가 <code>node_modules</code> 경로 자산을 업로드에서 제외 → 아이콘 <code>.ttf</code> 요청이 SPA fallback(<code>text/html</code>)으로 200을 받아 FontFace 파싱이 거부됐다. 200 응답이라 네트워크 탭만 보면 정상으로 보였다.</p></div>
+        <div class="bug__col bug__col--fix"><span>조치</span><p>배포 스크립트가 <code>assets/node_modules</code>를 <code>assets/vendor</code>로 rename하고 번들 경로를 치환하도록 수정. 배포 후 <code>font/ttf</code> Content-Type을 실측 확인했다.</p></div>
+      </div>
+
+      <div class="bug">
+        <div class="bug__col bug__col--sym"><span>증상</span><p>종목 검색에서 한 글자 칠 때마다 포커스와 키보드를 잃음</p></div>
+        <div class="bug__col"><span>원인</span><p>검색창이 FlatList의 <code>ListHeaderComponent</code>에 컴포넌트 <em>함수</em>로 들어가 있었다. 리렌더마다 새 타입으로 인식돼 헤더가 통째로 리마운트됐다.</p></div>
+        <div class="bug__col bug__col--fix"><span>조치</span><p>검색창을 리스트 밖 고정 영역으로 분리하고, 검색창 2개를 1개로 통합했다. 자동완성과 목록 필터를 한 입력이 담당한다.</p></div>
+      </div>
+
+      <div class="bug">
+        <div class="bug__col bug__col--sym"><span>증상</span><p>홈 총자산이 0원으로 고정되는 경우가 있음</p></div>
+        <div class="bug__col"><span>원인</span><p>숫자 카운트업이 <code>requestAnimationFrame</code> 기반인데, 비활성 탭이나 백그라운드 앱에서는 rAF가 멈춘다. 애니메이션이 시작값 0에서 영구 정지했다.</p></div>
+        <div class="bug__col bug__col--fix"><span>조치</span><p>문서가 비활성이면 즉시 최종값을 적용하도록 변경. <strong>중요한 정보가 애니메이션 완료 뒤에만 보이지 않게</strong> 하는 원칙을 컴포넌트에 못 박았다.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 제품 판단 ══════════════════════════ -->
+<section class="band band--tint" id="decisions">
+  <div class="shell">
+    <div class="band-head reveal">
+      <span class="eyebrow">Product decisions</span>
+      <h2 class="h2">기능을 덜어낸 결정들</h2>
+      <p class="lead">사용자가 미성년자라는 조건이 기능 추가보다 기능 제거를 더 많이 요구했습니다.</p>
+    </div>
+
+    <div class="calls reveal">
+      <div class="call">
+        <h3>ETF를 지원하지 않는다</h3>
+        <p>레버리지·인버스까지 딸려 들어오는 위험 노출을 청소년에게 열지 않기로 했습니다. 화면에서 감추는 데 그치지 않고 <code>instruments</code> 테이블의 관련 컬럼까지 마이그레이션으로 제거했습니다.</p>
+      </div>
+      <div class="call">
+        <h3>수익률을 보상하지 않는다</h3>
+        <p>수익률 미션은 필연적으로 몰빵을 유도합니다. 시즌 최대낙폭 15% 이내 유지, 3종목 동시 보유처럼 <strong>위험을 관리했을 때</strong> 보상이 나오도록 바꿨습니다.</p>
+      </div>
+      <div class="call">
+        <h3>거래 시간은 fail-closed</h3>
+        <p>환경변수가 비어 있으면 거래가 열리는 게 아니라 <strong>막히는</strong> 쪽이 기본값입니다. 운영 설정 실수가 곧 통제 없는 거래로 이어지지 않게 했습니다.</p>
+      </div>
+      <div class="call">
+        <h3>외부 연동은 전부 선택적</h3>
+        <p>SMS·뉴스·환율·푸시·운영자 알림 키가 없으면 에러 대신 해당 기능만 조용히 비활성화됩니다. 부가 기능의 장애가 거래와 학습을 막지 않습니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 지표 ══════════════════════════ -->
+<section class="band band--night" id="quality">
+  <div class="shell">
+    <div class="band-head reveal">
+      <span class="eyebrow">Quality</span>
+      <h2 class="h2">검증 결과</h2>
+      <p class="lead">아래 수치는 문서에서 옮긴 값이 아니라 이 문서를 만들면서 저장소에서 다시 측정한 값입니다.</p>
+    </div>
+
+    <div class="metrics reveal">
+      <div class="metric">
+        <b class="num">195<em>passed</em></b>
+        <span>pytest</span>
+        <small>테스트 파일 33개 · 실패 0건. PostgreSQL 방언 대신 ORM 표현으로 작성해 SQLite에서도 동일하게 돈다.</small>
+      </div>
+      <div class="metric">
+        <b class="num">0<em>error</em></b>
+        <span>TypeScript strict</span>
+        <small>앱 코드 16,995줄 · <code>tsc --noEmit</code> 기준.</small>
+      </div>
+      <div class="metric">
+        <b class="num">0.11<em>%</em></b>
+        <span>Janky frames</span>
+        <small>Galaxy Note20 실기기 <code>gfxinfo</code> 실측 — 17,084프레임 중 18. 90th 13ms.</small>
+      </div>
+      <div class="metric">
+        <b class="num">73<em>PR</em></b>
+        <span>머지된 Pull Request</span>
+        <small>커밋 162건 · 전부 squash 머지. 마이그레이션 26개는 운영 DB에 리허설 후 적용.</small>
+      </div>
+    </div>
+
+    <div class="verify reveal">
+      <div>
+        <span>운영 E2E</span>
+        <p>운영 백엔드에 붙여 <b>로그인 → 교육 퀴즈 → 투자 성향 조사 → 매수 체결 → 포트폴리오 검산 → 미션 클레임 → 기프티콘 교환</b>까지 한 계정으로 완주. 이 과정에서 결함 6건을 찾아 원인까지 수정했다.</p>
+      </div>
+      <div>
+        <span>실기기 QA</span>
+        <p>Galaxy Note20(SM-N981N)에서 <b>uiautomator2</b>로 화면을 자동 순회하며 캡처·검증. edge-to-edge 탭바 겹침, 티커바 상태바 침범을 실기기에서 잡았다.</p>
+      </div>
+      <div>
+        <span>마이그레이션</span>
+        <p>운영 스키마를 임시 DB에 복제해 <b>업그레이드 리허설을 먼저 돌린 뒤</b> 배포했다. release 커맨드가 <code>alembic upgrade head</code>를 실행한다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ FOOTER ══════════════════════════ -->
+<footer class="foot">
+  <div class="shell foot__inner">
+    <div>
+      <div class="foot__links">
+        <a href="https://finple.pages.dev" target="_blank" rel="noopener">웹 데모</a>
+        <a href="https://finple-backend.fly.dev/health" target="_blank" rel="noopener">API 헬스체크</a>
+        <a href="https://github.com/StockHedge/YouthInvestment" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+    <p class="foot__note">
+      <b>FinPle</b> · 핀쉐어 FinShare · 강지호<br>
+      화면 캡처는 Galaxy Note20 실기기와 에뮬레이터에서 운영 백엔드에 연결해 촬영했습니다.
+      수치는 <span class="num">2026-08-25</span> 저장소 실측 기준입니다.
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  if (!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  // 인쇄 시에는 항상 보이도록
+  window.addEventListener('beforeprint', function(){
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+  });
+})();
+</script>
+<div class="pf-foot">
+  <div class="pf-foot__in">
+    <nav class="pf-pager" aria-label="프로젝트 이동">
+      <a href="aiwebbuilder.html"><span class="pf-pager__k">← 이전</span><span class="pf-pager__v">AIWebbuilder — AI 웹빌딩 SaaS</span></a>
+      <a class="is-next" href="marketing-hub.html"><span class="pf-pager__k">다음 →</span><span class="pf-pager__v">마케팅 자동화 허브 — 사내 운영 시스템</span></a>
+    </nav>
+    <div class="pf-foot__meta">
+      <span>© 2026 강지호 · Kang Ji Ho</span>
+      <a href="mailto:jihono55@gmail.com">jihono55@gmail.com</a>
+      <a href="https://github.com/StockHedge" target="_blank" rel="noopener">github.com/StockHedge</a>
+      <span class="pf-sp">본문 수치는 저장소·운영 데이터 실측값입니다</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
