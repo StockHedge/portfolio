@@ -445,10 +445,57 @@ a{color:inherit}
   .reveal{opacity:1; transform:none}
 }
 
+/* ── 인쇄 ────────────────────────────────────────────────────────────────
+   A4 인쇄 폭은 595.28pt = 793px(96dpi)다. 그래서 min-width:960px(히어로 2단)와
+   min-width:820px(프로젝트 카드 2단) 미디어쿼리가 발동하지 않아, 손대지 않으면
+   화면과 다른 모바일 레이아웃으로 인쇄된다. 여기서 그 두 개를 되살린다.
+   여백은 0 으로 두고 섹션이 각자 패딩을 갖는다 — 히어로의 잉크 레일이
+   종이 끝까지 흐르는 게 이 지면의 시그니처이기 때문이다.
+   ──────────────────────────────────────────────────────────────────────── */
 @media print{
-  .reveal{opacity:1;transform:none}
-  .work,.edu{break-inside:avoid}
-  body{font-size:11pt}
+  @page{size:A4; margin:0}
+  body{font-size:10pt; line-height:1.55}
+  .reveal{opacity:1 !important; transform:none !important}
+
+  .shell{max-width:none; padding-inline:14mm}
+  .band{padding-block:22px}
+
+  /* 히어로 — 화면과 같은 2단. 풀블리드라 hero 자체 패딩은 0. */
+  .hero{max-width:none; padding-inline:0; grid-template-columns:.36fr .64fr}
+  .rail{margin-inline:0; padding:16mm 8mm 12mm 14mm; gap:20px}
+  .rail::before{display:none}
+  .portrait{max-width:none}
+  .ident h1{font-size:2rem}
+  /* 인쇄 레일 콘텐츠 폭은 약 203px 라 URL 이 한 줄에 안 들어가 break-all 이
+     'portf / olio' 처럼 단어 중간을 끊는다. 크기를 줄여 한 줄에 맞춘다. */
+  .kv dd{font-size:.8125rem; word-break:normal; overflow-wrap:anywhere}
+  .kv dt{font-size:.5625rem}
+  .intro{padding:16mm 14mm 12mm 8mm}
+  .intro h2{font-size:1.55rem}
+  .intro .lede{font-size:.95rem; max-width:none}
+  .focus li{font-size:.75rem; padding:4px 9px}
+  .totals{grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px}
+  .totals dd{font-size:1.35rem}
+  .hero-cta{display:none}          /* 종이에서 버튼은 의미가 없다 */
+
+  /* 프로젝트 카드 — 본문 + 썸네일 2단 복원 */
+  .work{grid-template-columns:minmax(0,1fr) minmax(0,220px); padding:16px 18px; gap:16px}
+  .work h3{font-size:1.05rem}
+  .work p{font-size:.85rem; max-width:none}
+  .work .facts dd{font-size:.875rem}
+  .work-tags li{font-size:.68rem; padding:3px 7px}
+  .work .arrow{display:none}
+
+  .method{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .method p{font-size:.82rem}
+  .vibe h2{font-size:1.5rem}
+  .stance p{font-size:.9rem}
+  .spec dd span{font-size:.72rem; padding:3px 8px}
+
+  /* 페이지 경계에서 쪼개지면 안 되는 것들 */
+  .work,.edu,.method article,.row,.spec > div,.stance{break-inside:avoid}
+  .vibe,.band{break-before:auto}
+  a{text-decoration:none}
 }
 </style>
 </head>
