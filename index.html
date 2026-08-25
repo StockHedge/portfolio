@@ -347,6 +347,9 @@ a{color:inherit}
   background:var(--cream-2); aspect-ratio:16/10;
 }
 .work-thumb img{inline-size:100%; block-size:100%; object-fit:cover; object-position:top center}
+/* 세로 폰 스크린샷을 16:10 로 자르면 상단(상태바·인사말)만 남는다.
+   이미지 높이의 36% 지점부터 보이게 해 자산 카드·차트가 들어오도록 한다. */
+.work-thumb.is-phone img{object-position:center 36%}
 .work-tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:var(--s4)}
 .work-tags li{
   padding:4px 10px; border-radius:6px; background:var(--cream-2);
@@ -690,8 +693,8 @@ a{color:inherit}
             <div><dt>화면</dt><dd class="num">25개</dd></div>
           </dl>
         </div>
-        <div class="work-thumb">
-          <img src="assets/finple/home.webp" alt="FinPle 앱 홈 화면" loading="lazy">
+        <div class="work-thumb is-phone">
+          <img src="assets/finple/home.webp" alt="FinPle 앱 홈 화면 — 총 자산 카드와 지수 위젯" loading="lazy">
         </div>
       </a>
 
