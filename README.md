@@ -11,7 +11,7 @@
 | **이름** | 강지호 (Kang Ji Ho) · 姜知昊 |
 | **역할** | AI Product Engineer · Solo Founder |
 | **이메일** | [jihono55@gmail.com](mailto:jihono55@gmail.com) |
-| **서비스** | [aiwebbuilder.kr](https://aiwebbuilder.kr) |
+| **포트폴리오** | [github.com/StockHedge/portfolio](https://github.com/StockHedge/portfolio) |
 | **GitHub** | [github.com/StockHedge](https://github.com/StockHedge) |
 | **학력** | 경기대학교 경제학과 · 경제학 학사 (2022.03 — 2026.02) |
 
