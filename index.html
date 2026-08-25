@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>강지호 — AI Product Engineer | 강지호 포트폴리오</title>
-<meta name="description" content="AI Product Engineer · Solo Founder 강지호. 바이브 코딩(프롬프트 엔지니어링·컨텍스트 설계·에이전트 오케스트레이션)으로 5개 제품을 기획부터 배포·운영까지 1인 수행. 누적 171,596 LOC · 870 커밋 · 2,055 테스트.">
+<meta name="description" content="AI Product Engineer · Solo Founder 강지호. 바이브 코딩(프롬프트 엔지니어링·컨텍스트 설계·에이전트 오케스트레이션)으로 6개 제품을 기획부터 배포·운영까지 1인 수행. 누적 188,112 LOC · 895 커밋 · 2,174 테스트.">
 <meta name="author" content="강지호">
 <meta property="og:type" content="website">
 <meta property="og:title" content="강지호 — AI Product Engineer 포트폴리오">
-<meta property="og:description" content="바이브 코딩으로 만든 5개 제품. 기획·개발·배포·운영을 1인 체계로 수행했습니다.">
+<meta property="og:description" content="바이브 코딩으로 만든 6개 제품. 기획·개발·배포·운영을 1인 체계로 수행했습니다.">
 <meta property="og:image" content="assets/img/profile.jpg">
 <meta name="theme-color" content="#111311">
 
@@ -462,6 +462,7 @@ a{color:inherit}
       <li><a href="aiwebbuilder.html">AI 웹빌더</a></li>
       <li><a href="finple.html">FinPle</a></li>
       <li><a href="marketing-hub.html">마케팅 허브</a></li>
+      <li><a href="06rag.html">06RAG</a></li>
       <li><a href="ai-beta-tester.html">AI 베타테스터</a></li>
     </ul>
     <a class="pf-nav__cta" href="mailto:jihono55@gmail.com">연락하기</a>
@@ -506,7 +507,7 @@ a{color:inherit}
     <p class="lede">
       사회·경제 도메인 이해를 기반으로 LLM 엔지니어링을 결합해,
       기획부터 개발·배포·운영까지 <b>1인 체계로 SaaS 제품을 만들고 운영</b>합니다.
-      아래 5개 제품은 전부 <b>바이브 코딩</b>으로 만들었고, 지금도 실제로 돌아갑니다.
+      아래 6개 제품은 전부 <b>바이브 코딩</b>으로 만들었고, 지금도 실제로 돌아갑니다.
     </p>
 
     <ul class="focus">
@@ -522,22 +523,22 @@ a{color:inherit}
     <dl class="totals">
       <div>
         <dt>누적 코드</dt>
-        <dd class="num">171,596<small>줄</small></dd>
+        <dd class="num">188,112<small>줄</small></dd>
         <p class="fine">Python · TypeScript</p>
       </div>
       <div>
         <dt>커밋</dt>
-        <dd class="num">870<small>건</small></dd>
-        <p class="fine">5개 저장소</p>
+        <dd class="num">895<small>건</small></dd>
+        <p class="fine">6개 저장소</p>
       </div>
       <div>
         <dt>자동 테스트</dt>
-        <dd class="num">2,055<small>건</small></dd>
+        <dd class="num">2,174<small>건</small></dd>
         <p class="fine">CI 게이트 통과</p>
       </div>
       <div>
         <dt>운영 중 제품</dt>
-        <dd class="num">5<small>개</small></dd>
+        <dd class="num">6<small>개</small></dd>
         <p class="fine">기획 → 운영 단독</p>
       </div>
     </dl>
@@ -545,7 +546,7 @@ a{color:inherit}
     <div class="hero-cta">
       <a class="btn btn--solid" href="#work">프로젝트 보기</a>
       <a class="btn btn--ghost" href="mailto:jihono55@gmail.com">이메일</a>
-      <a class="btn btn--ghost" href="pdf/portfolio-full.pdf" target="_blank" rel="noopener">통합 PDF · 25p</a>
+      <a class="btn btn--ghost" href="pdf/portfolio-full.pdf" target="_blank" rel="noopener">통합 PDF · 39p</a>
     </div>
   </div>
 </header>
@@ -618,7 +619,7 @@ a{color:inherit}
           그래서 명세와 산출물을 별도로 대조하는 단계를 두고, CI에 <b>실패를 무시하는 설정을
           두지 않습니다</b>. 통과한 것처럼 보이는 파이프라인이 가장 큰 리스크입니다.
         </p>
-        <span class="ev">테스트 2,055건 · CI 실패 시 머지 차단</span>
+        <span class="ev">테스트 2,174건 · CI 실패 시 머지 차단</span>
       </article>
     </div>
 
@@ -724,9 +725,36 @@ a{color:inherit}
         </div>
       </a>
 
+
+      <a class="work reveal" href="06rag.html">
+        <div>
+          <span class="work-no">PROJECT 04</span>
+          <h3>06RAG — 사내 문서 RAG 시스템<span class="arrow" aria-hidden="true">→</span></h3>
+          <p class="role">2026.07 · 민트투자자문 사내 시스템 · 설계 · 구현 · 배포 단독</p>
+          <p>
+            공모주·IPO 업무 문서에 자연어로 물으면 <b>원본 수치를 변형 없이 인용해</b> 답하는 사내 RAG.
+            파싱 → 표 인지 청킹 → 하이브리드 검색 → 재순위 → 생성 → 자가검증 7단계를 단계별로 다른 모델에 배정했고,
+            근거 출처를 각주가 아니라 1급 요소로 승격해 감사 추적이 화면에서 끊기지 않게 했습니다.
+          </p>
+          <ul class="work-tags">
+            <li>Vertex AI</li><li>BigQuery Vector Search</li><li>Cloud Run</li>
+            <li>Flask</li><li>React 18</li><li>BM25 + RRF</li><li>IAP</li>
+          </ul>
+          <dl class="facts">
+            <div><dt>코드</dt><dd class="num">16,516줄</dd></div>
+            <div><dt>테스트</dt><dd class="num">119건</dd></div>
+            <div><dt>색인</dt><dd class="num">17,354청크</dd></div>
+            <div><dt>운영비</dt><dd class="num">&lt;$20/월</dd></div>
+          </dl>
+        </div>
+        <div class="work-thumb">
+          <img src="assets/06rag/answer-sources.webp" alt="06RAG 질의 응답 화면 — 답변과 근거 출처 카드" loading="lazy">
+        </div>
+      </a>
+
       <a class="work reveal" href="ai-beta-tester.html">
         <div>
-          <span class="work-no">PROJECT 04 · 05</span>
+          <span class="work-no">PROJECT 05 · 06</span>
           <h3>AI 베타테스터 · 커뮤니티 다이제스트<span class="arrow" aria-hidden="true">→</span></h3>
           <p class="role">2026 · 기획 · 설계 · 구현 · 운영 단독</p>
           <p>
@@ -990,7 +1018,7 @@ a{color:inherit}
       이 포트폴리오의 모든 수치는 저장소와 운영 데이터베이스에서 직접 계측한 값입니다.
       코드 규모는 <span class="mono">git</span> 및 소스 집계, 파이프라인 비용·소요 시간은
       운영 테이블 실측치, 화면은 운영 중인 서비스의 실제 캡처입니다.
-      누적 지표는 5개 제품(AI 웹빌더 · FinPle · 마케팅 자동화 허브 · AI 베타테스터 · 커뮤니티 다이제스트)의 합계입니다.
+      누적 지표는 6개 제품(AI 웹빌더 · FinPle · 마케팅 자동화 허브 · 06RAG · AI 베타테스터 · 커뮤니티 다이제스트)의 합계입니다.
     </p>
   </div>
 </section>

@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>06RAG — 사내 문서 RAG 시스템 | 강지호 포트폴리오</title>
+<meta name="description" content="민트투자자문 공모주·IPO 업무 문서에 자연어로 질의하면 원본 수치를 그대로 인용해 답하는 사내 RAG. 파싱→표 인지 청킹→하이브리드 검색→재순위→생성→자가검증. Cloud Run · BigQuery Vector Search · Vertex AI.">
+<meta name="theme-color" content="#1B64DA">
+
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/Pretendard-400.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/Pretendard-700.woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/shell.css">
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   06RAG — 프로젝트 포트폴리오
+
+   베이스는 토스 블루. 포트폴리오 계열(ai-beta-tester·FinPle)과 같은 토큰을 쓴다.
+   제품 자체의 액센트는 민트(사명 유래)이지만, 그건 스크린샷 안에서만 등장한다 —
+   포트폴리오 지면의 언어와 제품의 언어를 섞지 않는다.
+
+   대비 검증
+     --ink-900 #191F28 on white      15.9:1  AAA
+     --ink-700 #333D4B on white      11.2:1  AAA
+     --ink-500 #6B7684 on white       4.7:1  AA
+     --blue-700 #1B64DA on white      5.3:1  AA (본문·버튼 라벨)
+     --blue-500 #3182F6 on white      3.7:1  큰 텍스트·면·장식 전용
+   ═══════════════════════════════════════════════════════════════════════ */
+:root{
+  color-scheme: light;
+
+  --blue-50:#EBF2FE;
+  --blue-100:#D7E5FD;
+  --blue-300:#7EAAF9;
+  --blue-500:#3182F6;
+  --blue-700:#1B64DA;
+  --blue-900:#0F3E8C;
+
+  --ink-900:#191F28;
+  --ink-700:#333D4B;
+  --ink-500:#6B7684;
+  --ink-300:#8B95A1;
+  --line:#E5E8EB;
+  --line-soft:#EEF1F4;
+  --surface:#FFFFFF;
+  --surface-1:#F9FAFB;
+  --surface-2:#F2F4F6;
+
+  --mint:#2E9E86;          /* 제품 액센트 — 스크린샷 설명에서만 참조 */
+
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px;
+  --s6:32px; --s7:48px; --s8:64px; --s9:96px;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px;
+
+  --maxw:1120px;
+  --gutter:clamp(20px,5vw,48px);
+  --ease:cubic-bezier(.2,.7,.3,1);
+  --shadow-frame:0 2px 4px rgba(25,31,40,.05), 0 24px 60px rgba(25,31,40,.12);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--surface); color:var(--ink-700);
+  font-family:var(--pf-sans);
+  font-size:16px; line-height:1.65; letter-spacing:-.011em;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+img{max-width:100%;height:auto;display:block}
+:where(h1,h2,h3,h4,p,ul,ol,dl,dd,figure){margin:0}
+ul{padding:0;list-style:none}
+a{color:var(--blue-700)}
+code,.mono{
+  font-family:var(--pf-mono); font-size:.9em;
+  font-variant-numeric:tabular-nums; letter-spacing:0;
+}
+code{background:var(--surface-2); color:var(--ink-900); padding:1px 5px; border-radius:5px}
+.tnum{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--blue-700); outline-offset:3px; border-radius:4px}
+
+.wrap{max-width:var(--maxw); margin-inline:auto; padding-inline:var(--gutter)}
+.sec{padding-block:clamp(56px,7vw,var(--s9))}
+.sec--tint{background:var(--surface-1)}
+.sec--ink{background:var(--ink-900); color:#D5DCE5}
+
+.kicker{
+  display:flex; align-items:center; gap:var(--s3);
+  font-size:.75rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--blue-700); margin-bottom:var(--s3);
+}
+.kicker::after{content:''; height:1px; flex:1; background:var(--line); max-width:110px}
+.sec--ink .kicker{color:var(--blue-300)}
+.sec--ink .kicker::after{background:rgba(255,255,255,.14)}
+
+.sec-head{max-width:64ch; margin-bottom:clamp(32px,4vw,var(--s7))}
+.sec-head h2{
+  font-size:clamp(1.5rem,1.1rem + 1.7vw,2.125rem); font-weight:700;
+  letter-spacing:-.032em; line-height:1.22; color:var(--ink-900);
+}
+.sec--ink .sec-head h2{color:#fff}
+.sec-head p{margin-top:var(--s4); font-size:1.0625rem; line-height:1.68; color:var(--ink-500)}
+.sec--ink .sec-head p{color:#9AA6B5}
+
+/* ═══════════════ HERO ═══════════════ */
+.hero{position:relative; overflow:hidden; padding-block:clamp(48px,6vw,88px) clamp(32px,4vw,56px)}
+.hero::after{
+  content:''; position:absolute; top:-340px; right:-240px;
+  width:760px; height:760px; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle, rgba(49,130,246,.14) 0%, rgba(49,130,246,0) 68%);
+}
+.hero-in{position:relative; z-index:1}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:5px 12px; border-radius:999px;
+  background:var(--blue-50); border:1px solid var(--blue-100);
+  font-size:.8125rem; font-weight:700; color:var(--blue-700);
+}
+.eyebrow .dot{
+  inline-size:7px; block-size:7px; border-radius:50%; background:var(--blue-500);
+  box-shadow:0 0 0 3px rgba(49,130,246,.2);
+}
+.hero h1{
+  margin-top:var(--s5);
+  font-size:clamp(2rem,1.3rem + 3vw,3.25rem); font-weight:700;
+  letter-spacing:-.042em; line-height:1.16; color:var(--ink-900); max-width:20ch;
+}
+.hero h1 em{font-style:normal; color:var(--blue-700)}
+.hero-lede{
+  margin-top:var(--s5); max-width:62ch;
+  font-size:clamp(1rem,.96rem + .3vw,1.125rem); line-height:1.72; color:var(--ink-500);
+}
+.hero-lede b{color:var(--ink-900); font-weight:600}
+.hero-meta{
+  display:flex; flex-wrap:wrap; gap:var(--s2) var(--s5);
+  margin-top:var(--s6); padding-top:var(--s5); border-top:1px solid var(--line);
+}
+.hero-meta div{min-width:0}
+.hero-meta dt{font-size:.6875rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-300)}
+.hero-meta dd{margin-top:3px; font-size:.9375rem; font-weight:600; color:var(--ink-900)}
+
+/* 지표 스트립 */
+.stats{
+  display:grid; gap:1px; margin-top:clamp(32px,4vw,var(--s7));
+  background:var(--line); border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+}
+.stats > div{background:var(--surface); padding:var(--s5); min-inline-size:0}
+.stats dd{
+  font-size:clamp(1.375rem,1.1rem + 1.1vw,1.75rem); font-weight:700;
+  letter-spacing:-.035em; line-height:1; color:var(--ink-900);
+}
+.stats dd .unit{font-size:.52em; font-weight:600; margin-inline-start:3px; color:var(--ink-500)}
+.stats dt{margin-top:var(--s2); font-size:.8125rem; color:var(--ink-500); line-height:1.45}
+
+/* ═══════════════ 문제 · 해법 ═══════════════ */
+.duo{display:grid; gap:var(--s4); grid-template-columns:minmax(0,1fr)}
+@media (min-width:820px){ .duo{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+.panel{padding:var(--s6); border-radius:var(--r-lg); border:1px solid var(--line)}
+.panel h3{
+  font-size:.75rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  margin-bottom:var(--s4);
+}
+.panel--problem{background:var(--surface-1)}
+.panel--problem h3{color:var(--ink-500)}
+.panel--solution{background:var(--blue-50); border-color:var(--blue-100)}
+.panel--solution h3{color:var(--blue-700)}
+.panel li{
+  position:relative; padding-inline-start:var(--s5); margin-top:var(--s3);
+  font-size:.9688rem; line-height:1.68;
+}
+.panel li::before{
+  content:''; position:absolute; inset-inline-start:2px; inset-block-start:.62em;
+  inline-size:6px; block-size:6px; border-radius:50%; background:var(--ink-300);
+}
+.panel--solution li::before{background:var(--blue-500)}
+.panel li:first-child{margin-top:0}
+.panel b{color:var(--ink-900); font-weight:600}
+
+/* ═══════════════ 파이프라인 (시그니처) ═══════════════ */
+.pipe{
+  display:grid; gap:var(--s3);
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  counter-reset:stage;
+}
+.stage{
+  position:relative; padding:var(--s5); min-inline-size:0;
+  background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--r-md);
+}
+.stage::before{
+  counter-increment:stage; content:counter(stage,decimal-leading-zero);
+  font-family:var(--pf-mono); font-size:.75rem; font-weight:700; color:var(--blue-300);
+}
+.stage h3{margin-top:var(--s2); font-size:1rem; font-weight:700; color:#fff; letter-spacing:-.02em}
+.stage p{margin-top:var(--s3); font-size:.875rem; line-height:1.62; color:#98A5B4}
+.stage .tag{
+  display:inline-block; margin-top:var(--s4); padding:3px 8px;
+  border:1px solid rgba(255,255,255,.16); border-radius:6px;
+  font-family:var(--pf-mono); font-size:.6875rem; color:#B6C2D0;
+}
+.stage.is-key{background:rgba(49,130,246,.14); border-color:rgba(126,170,249,.35)}
+
+.paramgrid{
+  display:grid; gap:1px; margin-top:clamp(32px,4vw,var(--s7));
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--r-md); overflow:hidden;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+}
+.paramgrid > div{background:var(--ink-900); padding:var(--s4) var(--s5); min-inline-size:0}
+.paramgrid dt{font-size:.75rem; color:#8593A3; letter-spacing:-.005em}
+.paramgrid dd{
+  margin-top:4px; font-family:var(--pf-mono); font-size:.9375rem; font-weight:600; color:#fff;
+}
+
+/* ═══════════════ 실제 화면 ═══════════════ */
+.shots{display:grid; gap:clamp(28px,3.4vw,var(--s7))}
+.frame{
+  border-radius:var(--r-lg); overflow:hidden;
+  border:1px solid var(--line); background:var(--surface-1);
+  box-shadow:var(--shadow-frame);
+}
+.frame-bar{
+  display:flex; align-items:center; gap:6px;
+  padding:9px var(--s4); background:var(--surface-2); border-bottom:1px solid var(--line);
+}
+.frame-bar .d{inline-size:9px; block-size:9px; border-radius:50%; background:#D5DAE0; flex:none}
+.frame-bar .url{
+  margin-inline-start:var(--s3); font-family:var(--pf-mono); font-size:12px; color:var(--ink-500);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-inline-size:0;
+}
+figure.shot{min-inline-size:0}
+figcaption{margin-top:var(--s4); font-size:.9375rem; line-height:1.66; color:var(--ink-500)}
+figcaption b{color:var(--ink-900); font-weight:600}
+.shot-duo{display:grid; gap:clamp(20px,2.6vw,var(--s6)); grid-template-columns:minmax(0,1fr)}
+@media (min-width:900px){ .shot-duo{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+
+.disclosure{
+  margin-top:var(--s5); padding:var(--s4) var(--s5);
+  background:var(--surface-2); border-inline-start:3px solid var(--ink-300);
+  border-radius:0 var(--r-sm) var(--r-sm) 0;
+  font-size:.875rem; line-height:1.66; color:var(--ink-500);
+}
+.disclosure b{color:var(--ink-700); font-weight:600}
+
+/* ═══════════════ 엔지니어링 사례 ═══════════════ */
+.cases{display:grid; gap:var(--s4)}
+.case{border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden; background:var(--surface)}
+.case-head{
+  display:flex; align-items:baseline; gap:var(--s4);
+  padding:var(--s5) var(--s6); background:var(--surface-1); border-bottom:1px solid var(--line);
+}
+.case-head .idx{font-family:var(--pf-mono); font-size:.8125rem; font-weight:700; color:var(--blue-700); flex:none}
+.case-head h3{font-size:1.0625rem; font-weight:700; letter-spacing:-.024em; color:var(--ink-900); line-height:1.4}
+.case-body{display:grid; gap:1px; background:var(--line); grid-template-columns:minmax(0,1fr)}
+@media (min-width:860px){ .case-body{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.cell{background:var(--surface); padding:var(--s5) var(--s6)}
+.cell h4{
+  font-size:.6875rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--ink-300); margin-bottom:var(--s3);
+}
+.cell p{font-size:.9375rem; line-height:1.7}
+.cell b{color:var(--ink-900); font-weight:600}
+.cell--result{background:var(--blue-50)}
+.cell--result h4{color:var(--blue-700)}
+
+/* ═══════════════ 스펙 ═══════════════ */
+.spec{border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden}
+.spec-row{
+  display:grid; gap:var(--s2) var(--s5); padding:var(--s5) var(--s6);
+  border-bottom:1px solid var(--line); background:var(--surface);
+  grid-template-columns:minmax(0,1fr);
+}
+@media (min-width:760px){ .spec-row{grid-template-columns:minmax(140px,168px) minmax(0,1fr)} }
+.spec-row:last-child{border-bottom:0}
+.spec-row:nth-child(even){background:var(--surface-1)}
+.spec-row dt{font-size:.9375rem; font-weight:700; color:var(--ink-900); letter-spacing:-.018em}
+.spec-row dd{font-size:.9375rem; line-height:1.7}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chips span{
+  padding:4px 10px; border-radius:6px; background:var(--surface-2);
+  border:1px solid var(--line); font-size:.8438rem; color:var(--ink-700);
+}
+.chips span.is-key{background:var(--blue-700); border-color:var(--blue-700); color:#fff; font-weight:600}
+
+/* 인프라 3열 */
+.arch{display:grid; gap:var(--s4); grid-template-columns:minmax(0,1fr)}
+@media (min-width:820px){ .arch{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.arch-col{border:1px solid var(--line); border-radius:var(--r-lg); padding:var(--s5) var(--s6); background:var(--surface)}
+.arch-col h3{
+  font-size:.75rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--blue-700); margin-bottom:var(--s4);
+}
+.arch-item{padding-block:var(--s3); border-top:1px solid var(--line-soft)}
+.arch-item:first-of-type{border-top:0; padding-top:0}
+.arch-item b{display:block; font-size:.9375rem; font-weight:600; color:var(--ink-900)}
+.arch-item span{display:block; margin-top:2px; font-family:var(--pf-mono); font-size:.8125rem; color:var(--ink-500)}
+
+/* 규모 */
+.scale{display:grid; gap:var(--s4); grid-template-columns:repeat(auto-fit,minmax(164px,1fr))}
+.scale > div{padding:var(--s5); border:1px solid var(--line); border-radius:var(--r-md); background:var(--surface); min-inline-size:0}
+.scale .n{font-size:1.625rem; font-weight:700; letter-spacing:-.035em; color:var(--ink-900); line-height:1}
+.scale .n .unit{font-size:.52em; font-weight:600; color:var(--ink-500); margin-inline-start:3px}
+.scale .l{margin-top:var(--s3); font-size:.9375rem; font-weight:600; color:var(--ink-900)}
+.scale .s{margin-top:2px; font-size:.8125rem; color:var(--ink-500)}
+
+.note{
+  margin-top:clamp(32px,4vw,var(--s7)); padding-top:var(--s5); border-top:1px solid var(--line);
+  font-size:.875rem; line-height:1.7; color:var(--ink-500); max-width:78ch;
+}
+
+/* 진입 애니메이션 */
+.reveal{opacity:0; transform:translateY(14px)}
+.reveal.in{opacity:1; transform:none; transition:opacity .5s var(--ease), transform .5s var(--ease)}
+@media (prefers-reduced-motion:reduce){ .reveal{opacity:1; transform:none} }
+@media print{
+  @page{size:A4; margin:12mm 11mm}
+  .reveal{opacity:1;transform:none}
+  .case,.frame,figure.shot,.arch-col,.scale > div,.stage{break-inside:avoid}
+  .sec{padding-block:20px}
+  .hero{padding-block:12px 16px}
+  .hero::after{display:none}
+  body{font-size:10.5pt; line-height:1.55}
+  /* 인쇄 폭에서는 auto-fit 이 어중간하게 접혀 빈 칸이 생긴다 — 열 수를 고정한다. */
+  .stats{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .stats dd{font-size:1.0625rem}
+  .stats dt{font-size:.6875rem}
+  .paramgrid{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .paramgrid dd{font-size:.75rem}
+  .paramgrid dt{font-size:.625rem}
+  .pipe{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .scale{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .scale .n{font-size:1.125rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="pf-nav" aria-label="포트폴리오 내비게이션">
+  <div class="pf-nav__in">
+    <a class="pf-nav__brand" href="index.html"><span class="pf-nav__mark" aria-hidden="true"></span>강지호&nbsp;<b>Portfolio</b></a>
+    <ul class="pf-nav__list">
+      <li><a href="index.html">프로필</a></li>
+      <li><a href="aiwebbuilder.html">AI 웹빌더</a></li>
+      <li><a href="finple.html">FinPle</a></li>
+      <li><a href="marketing-hub.html">마케팅 허브</a></li>
+      <li><a href="06rag.html" aria-current="page">06RAG</a></li>
+      <li><a href="ai-beta-tester.html">AI 베타테스터</a></li>
+    </ul>
+    <a class="pf-nav__cta" href="mailto:jihono55@gmail.com">연락하기</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<header class="hero">
+  <div class="wrap hero-in">
+    <span class="eyebrow"><span class="dot" aria-hidden="true"></span>사내 시스템 · 민트투자자문 · 2026</span>
+    <h1>수치를 <em>지어내지 않는</em><br>사내 문서 RAG</h1>
+    <p class="hero-lede">
+      공모주·IPO 업무 문서(락업 해제일·배정내역·펀드 보유·거래내역)에 자연어로 물으면
+      <b>원본 수치를 변형 없이 인용해</b> 답하는 사내 시스템입니다.
+      금융 문서 QA에서 신뢰의 핵심은 답이 아니라 <b>그 수치가 어느 문서·시트의 어느 행에서 왔는가</b>이므로,
+      근거 출처를 각주가 아니라 1급 요소로 승격했습니다.
+    </p>
+
+    <dl class="hero-meta">
+      <div><dt>기간</dt><dd class="mono">2026.07.08 – 07.16</dd></div>
+      <div><dt>역할</dt><dd>설계 · 구현 · 배포 단독</dd></div>
+      <div><dt>배포</dt><dd>Cloud Run · 서울 리전</dd></div>
+      <div><dt>접근</dt><dd>IAP · Workspace SSO</dd></div>
+    </dl>
+
+    <dl class="stats">
+      <div><dd class="tnum">16,516<span class="unit">줄</span></dd><dt>Python · TypeScript<br>98개 파일</dt></div>
+      <div><dd class="tnum">119<span class="unit">건</span></dd><dt>테스트 함수<br>15개 스위트</dt></div>
+      <div><dd class="tnum">17,354<span class="unit">청크</span></dd><dt>BigQuery 색인<br>OCR 2,262장 포함</dt></div>
+      <div><dd class="tnum">22<span class="unit">개</span></dd><dt>API 엔드포인트<br>Flask · SPA 동거</dt></div>
+      <div><dd class="tnum">9<span class="unit">일</span></dd><dt>첫 커밋 → 라이브<br>25 커밋</dt></div>
+    </dl>
+  </div>
+</header>
+
+<!-- ══════════════════ 개요 ══════════════════ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Overview</div>
+      <h2>"자료에 없으면 없다고 답한다"를 제품 규칙으로 만들기</h2>
+      <p>
+        일반 챗봇의 그럴듯한 답변은 금융 실무에서 쓸 수 없습니다.
+        락업 해제일을 하루라도 틀리면 매도 시점이 어긋나고, 배정 수량을 반올림하면 정산이 깨집니다.
+        그래서 이 시스템의 설계 목표는 "잘 답하기"가 아니라 <b>"틀리게 답하지 않기"</b>였습니다.
+      </p>
+    </div>
+
+    <div class="duo reveal">
+      <div class="panel panel--problem">
+        <h3>Problem</h3>
+        <ul>
+          <li>공모주 실무 자료가 Google Drive에 <b>xlsx·pdf·hwp·pptx·이미지</b>로 흩어져 있고, 같은 수치가 여러 파일에 파생돼 있다</li>
+          <li>엑셀 <b>병합 셀·다단 헤더</b>를 일반 파서로 읽으면 값이 행과 어긋나 조용히 오독한다</li>
+          <li>"이 수치 어디서 나왔냐"를 되짚을 수 없으면 <b>감사 추적이 끊긴다</b></li>
+          <li>문서에 비밀번호·계좌번호가 섞여 있어, 색인 자체가 <b>유출 경로</b>가 된다</li>
+        </ul>
+      </div>
+      <div class="panel panel--solution">
+        <h3>Solution</h3>
+        <ul>
+          <li><b>Layout-Aware 파싱</b> — 병합 셀 forward-fill, 헤더를 청크마다 반복해 행이 잘리지 않게 한다</li>
+          <li><b>하이브리드 검색</b> — 의미(벡터)와 정확 매칭(BM25)을 RRF로 융합. 종목명·펀드명은 BM25가 잡는다</li>
+          <li><b>근거 강제</b> — 답변의 모든 수치에 파일·시트·행이 붙고, 자료에 없으면 <code>제공된 자료에서 확인되지 않습니다</code></li>
+          <li><b>자격증명 4층 방어</b> — 색인 제외 · 청크 레닥션 · OCR 캐시 마스킹 · 감사 로그 컬럼 게이트</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ 파이프라인 ══════════════════ -->
+<section class="sec sec--ink" id="pipeline">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Signature · Pipeline</div>
+      <h2>7단계 파이프라인 — 단계마다 다른 모델을 쓴다</h2>
+      <p>
+        판단 폭이 좁은 단계(재작성·재순위)는 저비용 모델로 고정하고, 생성에만 상위 모델을 씁니다.
+        임베딩과 벡터 검색은 <span class="mono">asia-northeast3</span>(서울)에 두어
+        고객 금융 데이터가 국내를 벗어나지 않게 했습니다.
+      </p>
+    </div>
+
+    <div class="pipe">
+      <article class="stage reveal">
+        <h3>파싱</h3>
+        <p>확장자별 디스패치. 병합 셀 forward-fill로 값과 행을 붙들고, 수치·단위는 변형하지 않는다.</p>
+        <span class="tag">xlsx · pdf · hwp · docx · pptx · csv · 이미지</span>
+      </article>
+      <article class="stage reveal">
+        <h3>표 인지 청킹</h3>
+        <p>표를 행 중간에서 자르지 않고, 헤더를 청크마다 반복해 넣는다. 헤더 없는 조각은 해석 불가능한 숫자가 된다.</p>
+        <span class="tag">MAX_CHUNK_CHARS 2,600</span>
+      </article>
+      <article class="stage reveal">
+        <h3>중복 제거</h3>
+        <p>사본·구버전이 검색을 오염시킨다. MinHash로 근접중복 파일쌍을 접고 최신본만 남긴다.</p>
+        <span class="tag">MinHash 128 perm · eq 0.90</span>
+      </article>
+      <article class="stage reveal">
+        <h3>임베딩</h3>
+        <p>질의와 문서에 비대칭 <span class="mono">task_type</span>을 적용하고 병렬 호출한다. 로컬·프로덕션이 같은 모델을 공유해 벡터가 호환된다.</p>
+        <span class="tag">text-multilingual-embedding-002 · 768d</span>
+      </article>
+      <article class="stage is-key reveal">
+        <h3>하이브리드 검색</h3>
+        <p>벡터(의미)와 BM25(종목명·펀드명 정확 매칭)를 RRF로 융합한 뒤 ACL 필터와 Time Decay를 얹는다.</p>
+        <span class="tag">RRF k=60 · λ 0.3 · τ 365일</span>
+      </article>
+      <article class="stage reveal">
+        <h3>재순위</h3>
+        <p>넓게 회수한 후보 40건을 질의 관련도로 정밀 재정렬한다. 저비용 모델 고정 구간.</p>
+        <span class="tag">gemini-3.1-flash-lite</span>
+      </article>
+      <article class="stage reveal">
+        <h3>생성 · 자가검증</h3>
+        <p>수치 충실 프롬프트로 답을 만들고, 생성된 답의 수치·날짜·이름을 근거와 다시 대조해 교정한다.</p>
+        <span class="tag">gemini-3.5-flash · verify</span>
+      </article>
+    </div>
+
+    <dl class="paramgrid reveal">
+      <div><dt>주입 청크</dt><dd>TOP_K 8</dd></div>
+      <div><dt>재순위 후보창</dt><dd>40</dd></div>
+      <div><dt>질의 재작성</dt><dd>N = 3</dd></div>
+      <div><dt>소스 다양성</dt><dd>그룹당 2</dd></div>
+      <div><dt>질의 캐시</dt><dd>TTL 3일</dd></div>
+      <div><dt>운영 비용</dt><dd>&lt; $20 / 월</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ══════════════════ 실제 화면 ══════════════════ -->
+<section class="sec" id="screens">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Screens</div>
+      <h2>근거를 각주가 아니라 1급 요소로</h2>
+      <p>
+        화면당 시그니처는 하나입니다 — <b>근거 출처 카드</b>.
+        파일명·시트·행·관련도를 드러내고, 펼치면 그 수치가 실제로 적혀 있던 원본 행이 그대로 나옵니다.
+        나머지 UI는 조용히 물러나 데이터가 주인공이 되게 했습니다.
+      </p>
+    </div>
+
+    <div class="shots">
+      <figure class="shot reveal">
+        <div class="frame">
+          <div class="frame-bar" aria-hidden="true">
+            <span class="d"></span><span class="d"></span><span class="d"></span>
+            <span class="url">06rag · 찾기 — 답변과 근거</span>
+          </div>
+          <img src="assets/06rag/answer-sources.webp" width="1568" height="744"
+               alt="06RAG 질의 응답 화면. 산일전기 매도가능일 질문에 대해 확약구분별 수량과 매도가능일이 담긴 표로 답하고, 아래에 근거 출처 카드 4건이 관련도 점수와 함께 나열되어 있다." loading="eager">
+        </div>
+        <figcaption>
+          <b>답변 + 근거 출처 카드</b> — 표는 마크다운으로 렌더링되고, 수치는 <code>tabular-nums</code>로 세로 정렬됩니다.
+          근거 4건에는 각각 파일명·시트·행 번호와 관련도 막대가 붙습니다.
+          하단의 <b>✎ 편집</b> 칩은 검색에서 편집 탭으로 넘어가는 브리지로, 근거 파일을 그대로 편집 대상에 고정합니다.
+        </figcaption>
+      </figure>
+
+      <div class="shot-duo">
+        <figure class="shot reveal">
+          <div class="frame">
+            <div class="frame-bar" aria-hidden="true">
+              <span class="d"></span><span class="d"></span><span class="d"></span>
+              <span class="url">근거 카드 펼침 — 원본 행</span>
+            </div>
+            <img src="assets/06rag/source-expanded.webp" width="1568" height="744"
+                 alt="근거 출처 카드를 펼친 화면. 원본 엑셀 행의 종목명, 상장일, 기관확약 수량, 공모가가 고정폭 글꼴로 그대로 표시된다." loading="lazy">
+          </div>
+          <figcaption><b>근거 펼침</b> — 답변이 인용한 그 행이 원문 그대로. 감사 추적이 화면에서 끊기지 않습니다.</figcaption>
+        </figure>
+
+        <figure class="shot reveal">
+          <div class="frame">
+            <div class="frame-bar" aria-hidden="true">
+              <span class="d"></span><span class="d"></span><span class="d"></span>
+              <span class="url">06rag · 빈 상태</span>
+            </div>
+            <img src="assets/06rag/empty-state.webp" width="1568" height="744"
+                 alt="06RAG 빈 상태 화면. 무엇을 찾아드릴까요 문구와 함께 추천 질의 4개가 칩으로 제시되고, 좌측에 내 대화와 팀 이력 목록이 있다." loading="lazy">
+          </div>
+          <figcaption><b>빈 상태</b> — "데이터 없음" 대신 실제 질의 예시로 행동을 유도합니다. 추천 질의는 팀의 인기 정상질의에서 뽑습니다.</figcaption>
+        </figure>
+      </div>
+
+      <div class="shot-duo">
+        <figure class="shot reveal">
+          <div class="frame">
+            <div class="frame-bar" aria-hidden="true">
+              <span class="d"></span><span class="d"></span><span class="d"></span>
+              <span class="url">06rag · 편집 · 산출</span>
+            </div>
+            <img src="assets/06rag/edit-tab.webp" width="1568" height="744"
+                 alt="문서 편집·산출 탭 화면. 문서 편집, 차트 생성, 이미지 편집 3개 모드가 있고 원본은 그대로 두고 사본을 출력폴더에 산출한다는 안내가 있다." loading="lazy">
+          </div>
+          <figcaption><b>편집 · 산출</b> — 자연어 지시를 셀 좌표로 매핑해 미리보기를 만들고, 수락 시 <b>원본이 아니라 출력폴더에 사본</b>을 만듭니다.</figcaption>
+        </figure>
+
+        <figure class="shot reveal">
+          <div class="frame">
+            <div class="frame-bar" aria-hidden="true">
+              <span class="d"></span><span class="d"></span><span class="d"></span>
+              <span class="url">06rag · 다크 모드</span>
+            </div>
+            <img src="assets/06rag/dark-mode.webp" width="1568" height="744"
+                 alt="06RAG 다크 모드 화면. 같은 답변과 근거 카드가 어두운 배경의 별도 팔레트로 표시된다." loading="lazy">
+          </div>
+          <figcaption><b>다크 모드</b> — 라이트의 반전이 아닙니다. elevation을 그림자가 아니라 surface 밝기 단계로 표현하고, 액센트 채도를 20% 낮춰 어두운 배경에서 진동하지 않게 했습니다.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <p class="disclosure reveal">
+      <b>화면에 대한 고지</b> — 위 캡처는 저장소의 실제 프런트엔드(React 18 · Vite)를 로컬에서 구동해 찍은 것으로,
+      컴포넌트·CSS·디자인 토큰은 운영 코드 그대로입니다.
+      다만 백엔드는 사내 GCP 자격증명과 실제 고객 문서가 필요해 이 환경에서 구동할 수 없으므로,
+      <b>질의 응답 내용과 파일명·수치는 API 계약에 맞춘 시연용 샘플</b>입니다. 실제 사내 데이터가 아닙니다.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════ 엔지니어링 판단 ══════════════════ -->
+<section class="sec sec--tint" id="cases">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Engineering Decisions</div>
+      <h2>증상을 덮지 않고 원인까지 내려간 기록</h2>
+      <p>
+        아래 네 건은 모두 완화책을 먼저 넣어본 뒤, 그것이 증상 가리기임을 확인하고 구조를 바꾼 사례입니다.
+      </p>
+    </div>
+
+    <div class="cases">
+      <article class="case reveal">
+        <div class="case-head">
+          <span class="idx">01</span>
+          <h3>매일 밤 수백 청크가 재임베딩되는데 아무것도 안 바뀌던 문제</h3>
+        </div>
+        <div class="case-body">
+          <div class="cell">
+            <h4>증상</h4>
+            <p>야간 동기화 때마다 <b>550~830청크</b>가 재임베딩되고 orphan이 생겼다 사라졌다를 반복했습니다. 문서를 아무도 수정하지 않은 날에도 그랬고, <b>수렴하지 않았습니다</b>.</p>
+          </div>
+          <div class="cell">
+            <h4>진단</h4>
+            <p>계측 커밋을 먼저 넣어 소스별 집계와 old/new 텍스트 diff를 뽑았습니다. 범인은 한 시트의 <b>라이브 주가 컬럼</b>이었습니다 — <code>GOOGLEFINANCE</code>와 웹스크래핑 수식이 매 export마다 재계산되며 값만 바뀌어 <b>시트 전체 청크의 해시가 갈렸습니다</b>. 자동 재계산은 Drive <span class="mono">modifiedTime</span>을 올리지 않습니다.</p>
+          </div>
+          <div class="cell cell--result">
+            <h4>조치</h4>
+            <p><span class="mono">modifiedTime</span> 게이트를 넣어, 미변경 파일은 재파싱 대신 <b>BigQuery의 기존 청크를 재사용</b>하게 했습니다. 재파싱·재임베딩 0. 다만 게이트는 데이터 손실 위험을 만들므로 안전장치를 함께 넣었습니다 — 트립와이어 분모를 활성 청크로 한정하고, orphan 삭제 스코프를 활성 파일로 좁히고, <b>동결된 파일에 자격증명 컬럼이 있으면 강제로 재파싱</b>해 보안 가드가 자가치유되게 했습니다.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="case reveal">
+        <div class="case-head">
+          <span class="idx">02</span>
+          <h3>동의어를 아무리 늘려도 원천 문서가 안 잡히던 검색</h3>
+        </div>
+        <div class="case-body">
+          <div class="cell">
+            <h4>증상</h4>
+            <p>"홀딩" 관련 질의를 하면 파생 문서만 걸리고, 그 수치가 실제로 계산된 <b>원천 문서(배정내역·명세부)가 top-K에 들어오지 않았습니다</b>.</p>
+          </div>
+          <div class="cell">
+            <h4>1차 완화와 그 한계</h4>
+            <p>도메인 동의어군(<span class="mono">홀딩 ↔ 배정내역 ↔ 명세부</span>)을 기본값에 넣어 급한 불은 껐습니다. 하지만 이건 <b>어휘를 손으로 이어 붙인 것</b>이라, 새 파생 관계가 생길 때마다 사람이 등록해야 합니다. 검색이 문서 사이의 관계를 모른다는 사실은 그대로였습니다.</p>
+          </div>
+          <div class="cell cell--result">
+            <h4>근본 해결</h4>
+            <p>xlsx <b>수식에서 파생 관계를 추출</b>했습니다. 크로스시트 참조, 크로스파일 <span class="mono">[1]</span> 참조, <span class="mono">IMPORTRANGE</span>를 파싱해 (참조하는 문서 → 참조되는 문서) 엣지를 인제스트 시점에 사전계산하고, 검색 시 상위 소스의 원천 문서를 <b>재순위 후보창의 꼬리에 주입</b>합니다. 후보 수는 그대로라 <b>재순위 지연 증가는 0</b>이고, 킬스위치를 끄면 완전 no-op입니다.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="case reveal">
+        <div class="case-head">
+          <span class="idx">03</span>
+          <h3>색인 자체가 유출 경로가 되는 문제</h3>
+        </div>
+        <div class="case-body">
+          <div class="cell">
+            <h4>위험</h4>
+            <p>업무 문서에는 비밀번호·보안카드·계좌번호가 섞여 있습니다. 이미지 <b>2,262장을 일괄 OCR</b>하기로 한 시점에, 텍스트화된 자격증명이 여러 저장 계층에 평문으로 남게 된다는 게 드러났습니다.</p>
+          </div>
+          <div class="cell">
+            <h4>계층별 갭</h4>
+            <p>최종 청크에는 레닥션이 걸려 있었지만 <b>OCR 캐시</b>에는 약한 마스킹만 적용돼 이미지 안의 비밀번호가 BigQuery에 그대로 상주했습니다. 편집 감사 로그도 값 단위 레닥션만으로는 <b>컬럼 전체가 자격증명</b>인 경우를 잡지 못했습니다.</p>
+          </div>
+          <div class="cell cell--result">
+            <h4>4층 방어</h4>
+            <p>① 자격증명 파일은 <b>색인 자체를 제외</b>, ② 청크 텍스트 레닥션, ③ OCR 캐시도 같은 레닥션으로 승격, ④ 감사 로그는 값이 아니라 <b>컬럼명으로 게이트</b>. 채팅 스크린샷 다수는 OCR 후 내용 기준으로 제외했고, 배포 전 BigQuery를 감사해 <b>자격증명 컬럼 잔존 0/14,662</b>를 확인했습니다.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="case reveal">
+        <div class="case-head">
+          <span class="idx">04</span>
+          <h3>모델을 바꿨을 때 과거 정답이 깨졌는지 어떻게 아는가</h3>
+        </div>
+        <div class="case-body">
+          <div class="cell">
+            <h4>문제</h4>
+            <p>모델·프롬프트·검색 파라미터를 바꾸면 어제까지 맞던 답이 조용히 틀려질 수 있습니다. RAG는 <b>회귀가 눈에 안 보이는</b> 시스템입니다.</p>
+          </div>
+          <div class="cell">
+            <h4>LLM judge를 안 쓴 이유</h4>
+            <p>채점을 LLM에 맡기면 판정 자체가 흔들려 <b>테스트가 flaky해집니다</b>. 대신 생성 규칙 중 결정적으로 검사 가능한 것만 골랐습니다 — "날짜는 원본 그대로"는 정규식으로 확인할 수 있습니다.</p>
+          </div>
+          <div class="cell cell--result">
+            <h4>골든셋 회귀 하네스</h4>
+            <p>운영 질의 로그에서 사람이 검증한 정답을 <b>골든셋으로 동결</b>하고, 변경 후 파이프라인을 재실행해 핵심 날짜·수치가 보존되는지 검사합니다. <b>날짜 커버리지 100%가 하드 게이트</b>, 수치는 90%. 테이블은 append-only로 두어 스트리밍 버퍼 DML 제약을 피했고, 하네스는 Cloud Run Job으로 분리해 스케줄 실행합니다.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ 인프라 ══════════════════ -->
+<section class="sec" id="infra">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Infrastructure</div>
+      <h2>키 없는 운영, 서울에 머무는 데이터</h2>
+      <p>
+        서비스 계정 키 파일을 만들지 않았습니다. 프로덕션 자격은 Cloud Run 런타임 서비스 계정이고,
+        SMTP 같은 외부 자격만 Secret Manager에서 런타임에 가져옵니다 — 코드·이미지·환경변수 어디에도 비밀이 없습니다.
+      </p>
+    </div>
+
+    <div class="arch reveal">
+      <div class="arch-col">
+        <h3>Serving</h3>
+        <div class="arch-item"><b>API + SPA</b><span>Cloud Run · rag-api</span></div>
+        <div class="arch-item"><b>컨테이너</b><span>멀티스테이지 (node → python)</span></div>
+        <div class="arch-item"><b>인증</b><span>IAP · Workspace SSO</span></div>
+        <div class="arch-item"><b>질의자 신원</b><span>X-Goog-Authenticated-User-Email</span></div>
+      </div>
+      <div class="arch-col">
+        <h3>Data</h3>
+        <div class="arch-item"><b>벡터 검색</b><span>BigQuery VECTOR_SEARCH</span></div>
+        <div class="arch-item"><b>로컬 동형 저장소</b><span>NumPy · ChromaDB</span></div>
+        <div class="arch-item"><b>파생 테이블</b><span>lockup · lineage · cards</span></div>
+        <div class="arch-item"><b>운영 로그</b><span>query_log · feedback · edit_log</span></div>
+      </div>
+      <div class="arch-col">
+        <h3>Jobs</h3>
+        <div class="arch-item"><b>야간 동기화</b><span>rag-sync · 03:00 KST</span></div>
+        <div class="arch-item"><b>회귀 평가</b><span>rag-eval</span></div>
+        <div class="arch-item"><b>락업 D-day 알림</b><span>rag-lockup-alert · D-7 · D-1</span></div>
+        <div class="arch-item"><b>스케줄</b><span>Cloud Scheduler</span></div>
+      </div>
+    </div>
+
+    <div class="sec-head reveal" style="margin-top:clamp(40px,5vw,var(--s8))">
+      <div class="kicker">Tech Spec</div>
+      <h2>개발 스펙</h2>
+    </div>
+
+    <dl class="spec reveal">
+      <div class="spec-row">
+        <dt>백엔드</dt>
+        <dd class="chips">
+          <span class="is-key">Python 3.11</span><span class="is-key">Flask</span>
+          <span>google-cloud-bigquery</span><span>google-api-python-client</span>
+          <span>rank_bm25</span><span>datasketch (MinHash)</span>
+          <span>openpyxl</span><span>pdfplumber</span><span>python-docx · pptx</span>
+          <span>Pillow</span>
+        </dd>
+      </div>
+      <div class="spec-row">
+        <dt>AI · 검색</dt>
+        <dd class="chips">
+          <span class="is-key">Vertex AI</span>
+          <span class="is-key">gemini-3.5-flash</span>
+          <span>gemini-3.1-flash-lite</span>
+          <span>text-multilingual-embedding-002 (768d)</span>
+          <span>BigQuery VECTOR_SEARCH</span><span>BM25 + RRF</span>
+          <span>Time Decay</span><span>LLM 재순위</span><span>질의 재작성</span><span>자가검증</span>
+        </dd>
+      </div>
+      <div class="spec-row">
+        <dt>프론트엔드</dt>
+        <dd class="chips">
+          <span class="is-key">React 18</span><span class="is-key">TypeScript</span>
+          <span>Vite 6</span><span>react-markdown · remark-gfm</span>
+          <span>OKLCH 디자인 토큰</span><span>다크 모드 별도 팔레트</span><span>WCAG AA</span>
+        </dd>
+      </div>
+      <div class="spec-row">
+        <dt>인프라</dt>
+        <dd class="chips">
+          <span class="is-key">Cloud Run</span><span class="is-key">BigQuery</span>
+          <span>Cloud Run Jobs</span><span>Cloud Scheduler</span>
+          <span>Secret Manager</span><span>IAP</span><span>Docker 멀티스테이지</span>
+          <span>키리스 서비스 계정</span><span>asia-northeast3</span>
+        </dd>
+      </div>
+      <div class="spec-row">
+        <dt>연동</dt>
+        <dd class="chips">
+          <span>Google Drive API</span><span>Google Sheets API</span>
+          <span>도메인 전체 위임</span><span>지수 백오프 + 커서</span><span>SMTP 알림</span>
+        </dd>
+      </div>
+      <div class="spec-row">
+        <dt>입력 포맷</dt>
+        <dd class="chips">
+          <span>xlsx · xls</span><span>pdf</span><span>hwp · hwpx</span>
+          <span>docx · pptx</span><span>csv</span>
+          <span>이미지 8종 (Gemini 멀티모달 OCR)</span>
+          <span>텔레그램 · 카카오톡 export</span>
+        </dd>
+      </div>
+      <div class="spec-row">
+        <dt>품질 · 보안</dt>
+        <dd class="chips">
+          <span class="is-key">pytest 119건</span>
+          <span>골든셋 회귀 하네스</span><span>ACL 질의 필터</span>
+          <span>자격증명 4층 레닥션</span><span>PII 마스킹</span>
+          <span>편집 감사 로그</span><span>원본 불변 편집</span>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<!-- ══════════════════ 규모 ══════════════════ -->
+<section class="sec sec--tint" id="scale">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Scale</div>
+      <h2>개발 규모</h2>
+      <p>2026년 7월 8일 첫 커밋부터 7월 16일까지 9일간, 설계·구현·배포를 혼자 수행했습니다.</p>
+    </div>
+
+    <div class="scale reveal">
+      <div>
+        <div class="n tnum">9,896<span class="unit">줄</span></div>
+        <div class="l">백엔드</div>
+        <div class="s">Python 51개 파일 · src 모듈 44개</div>
+      </div>
+      <div>
+        <div class="n tnum">3,230<span class="unit">줄</span></div>
+        <div class="l">프론트엔드</div>
+        <div class="s">React · TypeScript 19개 파일</div>
+      </div>
+      <div>
+        <div class="n tnum">2,594<span class="unit">줄</span></div>
+        <div class="l">테스트</div>
+        <div class="s">함수 119개 · 15개 스위트</div>
+      </div>
+      <div>
+        <div class="n tnum">442<span class="unit">줄</span></div>
+        <div class="l">인프라 · 배포</div>
+        <div class="s">배포 스크립트 7개 · 스키마 · Dockerfile</div>
+      </div>
+      <div>
+        <div class="n tnum">25<span class="unit">커밋</span></div>
+        <div class="l">9일간</div>
+        <div class="s">일 평균 2.8건</div>
+      </div>
+    </div>
+
+    <p class="note">
+      본문 수치는 저장소에서 직접 계측한 값입니다. 코드 규모는 소스 집계(생성 파일 <span class="mono">package-lock.json</span> 제외),
+      파이프라인 파라미터와 모델명은 <span class="mono">config.py</span>·<span class="mono">cloud/deploy.md</span> 기준입니다
+      — 저장소 <span class="mono">README.md</span>에는 이전 세대 모델명이 남아 있어, 코드를 진실의 원천으로 삼았습니다.
+      색인 청크 수와 OCR 처리량은 운영 로그에 기록된 실측치입니다.
+      저장소는 사내 자료를 다루므로 private이며, 코드 열람이 필요하시면 이메일로 요청해 주세요.
+    </p>
+  </div>
+</section>
+
+</main>
+
+<div class="pf-foot">
+  <div class="pf-foot__in">
+    <nav class="pf-pager" aria-label="프로젝트 이동">
+      <a href="marketing-hub.html"><span class="pf-pager__k">← 이전</span><span class="pf-pager__v">마케팅 자동화 허브 — 사내 운영 시스템</span></a>
+      <a class="is-next" href="ai-beta-tester.html"><span class="pf-pager__k">다음 →</span><span class="pf-pager__v">AI 베타테스터 · 커뮤니티 다이제스트</span></a>
+    </nav>
+    <div class="pf-foot__meta">
+      <span>© 2026 강지호 · Kang Ji Ho</span>
+      <a href="mailto:jihono55@gmail.com">jihono55@gmail.com</a>
+      <a href="https://github.com/StockHedge" target="_blank" rel="noopener">github.com/StockHedge</a>
+      <span class="pf-sp">본문 수치는 저장소·운영 데이터 실측값입니다</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// 스크롤 진입 페이드업. opacity/transform 만 건드려 리플로우를 만들지 않는다.
+(function () {
+  var els = document.querySelectorAll('.reveal');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !('IntersectionObserver' in window)) {
+    for (var i = 0; i < els.length; i++) els[i].classList.add('in');
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+  els.forEach(function (el) { io.observe(el); });
+})();
+</script>
+</body>
+</html>
