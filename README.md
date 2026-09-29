@@ -67,15 +67,15 @@ AI가 만든 코드는 "있는 코드"만 검토됩니다. **코드 리뷰는 �
 
 ## 주요 프로젝트
 
-### 01. AIWebbuilder — 정적 Portfolio Display
-`2026.05 — 개발·운영 이력` · 기획 · 백엔드 · 프론트 · 앱 · 인프라 · 결제 구현
+### 01. AIWebbuilder — 운영 중인 AI 웹사이트 제작 서비스
+`2026.05 출시 · 현재 운영 재개` · 기획 · 백엔드 · 프론트 · 앱 · 인프라 · 결제 구현
 
-AI 웹빌더 제품을 기획하고 풀스택으로 구현·운영했습니다. 현재 공개 주소는 기존 생성 결과 3개를
-보여 주는 정적 Display입니다. 신규 AI 생성·회원가입·결제·API 요청은 제공하지 않습니다.
+AI 웹빌더 제품을 기획하고 풀스택으로 구현했습니다. 현재 서비스 주소는
+[aiwebbuilder.kr](https://aiwebbuilder.kr/)이며, 이 포트폴리오에는 개발 이력과 보존된 사이트 사례 3개를 소개합니다.
 
-- Display: Cloudflare Pages 정적 파일만 호스팅 · 함수·Workers·DB 바인딩 없음
-- React · TypeScript · Vite · 전용 빌드 및 정적 자원 검증
-- 🔗 [정적 샘플 갤러리](https://aiwebbuilder-display.pages.dev/explore) · [상세 포트폴리오](https://stockhedge.github.io/portfolio/aiwebbuilder.html)
+- React · TypeScript · FastAPI · Cloudflare 기반 제품 개발 이력
+- 이전 Display 빌드의 보존 사례 3개는 [샘플 갤러리](https://aiwebbuilder-display.pages.dev/explore)에서 별도로 확인 가능
+- 🔗 [운영 서비스](https://aiwebbuilder.kr/) · [상세 포트폴리오](https://stockhedge.github.io/portfolio/aiwebbuilder.html)
 
 ### 02. FinPle — 청소년 모의투자 플랫폼
 `2026.03 — 2026.08` · 기획 · 백엔드 · 앱 · 인프라 · QA 단독
@@ -139,7 +139,7 @@ AI 웹빌더 제품을 기획하고 풀스택으로 구현·운영했습니다. 
 
 | | | |
 |---|---|---:|
-| **StockHedge** — 대표 · 1인 스타트업 | AI 웹빌더 제품 기획·개발·운영 경험 · 현재 정적 Display 전시 | 2025.08 — 현재 |
+| **StockHedge** — 대표 · 1인 스타트업 | AI 웹빌더 제품 기획·개발·운영 · 현재 aiwebbuilder.kr 운영 중 | 2025.08 — 현재 |
 | **민트투자자문** — AI Transformation | 사내 통합 플랫폼 엔드투엔드 설계 및 LLM 엔지니어링<br>(인턴 2026.04–2026.07 · 프리랜서 2026.07–현재) | 2026.04 — 현재 |
 | **토스페이** — Onboarding Operational Assistant | 가맹점 온보딩 운영 프로세스 지원 및 BD 업무 | 2025.06 — 2025.08 |
 | **광교1동 상권 활성화 프로젝트** — 기획/총괄 | 상권 데이터 분석 기반 실행안 수립 및 이해관계자 조율 | 2025.09 — 2025.12 |
@@ -156,7 +156,7 @@ AI 웹빌더 제품을 기획하고 풀스택으로 구현·운영했습니다. 
 ---
 
 <sub>이 포트폴리오의 모든 수치는 저장소와 운영 데이터베이스에서 직접 계측한 값입니다.
-화면은 실제 제품에서 보존한 샘플이며, AIWebbuilder는 현재 정적 Display 상태입니다.
+화면은 실제 제품에서 보존한 샘플입니다. AIWebbuilder 서비스는 aiwebbuilder.kr에서 운영 중이며, 이전 Display 샘플은 별도 전시 자료입니다.
 일부 저장소는 private이므로 코드 열람이 필요하시면 이메일로 요청해 주세요.</sub>
 
 <sub>© 2026 강지호 · Kang Ji Ho — 본문 텍스트와 이미지는 저작자에게 있습니다.
