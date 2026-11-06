@@ -112,6 +112,7 @@ AI 웹빌더 제품을 기획하고 풀스택으로 구현했습니다. 현재�
 - **11,668줄** · 비교 지표 5개 · 매주 토요일 발행 · 스테이징 실데이터 발행 검증 완료
 - Next.js 16 · TypeScript · PostgreSQL · KRX · OpenDART · Vercel · 카카오 로그인
 - 저장소 private · 공개 출시 준비 중
+- 🔗 [상세 포트폴리오](https://stockhedge.github.io/portfolio/stockmate.html)
 
 ### 05. 06RAG — 사내 문서 RAG 시스템
 `2026.07` · 민트투자자문 사내 시스템 · 설계 · 구현 · 배포 단독
