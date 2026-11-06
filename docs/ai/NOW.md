@@ -1,6 +1,6 @@
 # NOW — 포트폴리오 사이트 (stockhedge.github.io/portfolio)
 
-갱신: 2026-11-06 · 작업 브랜치 `content/portfolio-facts` (origin/main 기준, 로컬 커밋만)
+갱신: 2026-11-06 · 작업 브랜치 `content/portfolio-facts` → PR #2로 `main` 병합(2732b6e), 실제 사이트 반영 완료
 
 ## 현재 상태
 
@@ -70,9 +70,13 @@
 
 - 헤드리스 Chrome(1440·390)으로 6개 페이지: 깨진 그림 0, 스크립트 오류 0, 가로 넘침 0, 내부 앵커 누락 0,
   메뉴 현재 위치 정상. 6개 페이지 모두 `~요` 체 잔존 0. 메인 첫 화면 캡처로 기존 모습 유지 확인.
-- 확인 못 한 것: 실제 GitHub Pages 반영 후 화면(미병합), Safari·실기기.
+- 반영 후(11-06 10:36 UTC, pages-build-deployment 성공): 7개 주소 HTTP 200, 실제 Chrome에서 7개 페이지 그림 깨짐 0·
+  메뉴 7개·현재 위치 정상. 헤드리스 Chrome은 이 환경에서 외부 접속이 막혀 실제 사이트 검사에 못 씀.
+- 확인 못 한 것: Safari·실기기, 실제 사이트의 휴대폰 폭 화면(로컬에서는 390 폭 확인).
+- 배포 전 과금 점검: 저장소 workflow 없음, Billing 11월 Actions 청구액 $0(포함 사용량 내).
+  계정 Actions 예산은 $18(0원 차단 아님) — 참고만, 변경하지 않음.
 
 ## 남은 일
 
-- `main` 병합(실제 반영) 여부 결정.
+- 이 메모 갱신은 작업 브랜치에만 있다(문서 한 줄 때문에 배포를 다시 돌리지 않음). 다음 반영 때 함께 병합.
 - `pdf/portfolio-full.pdf`(첫 화면 "통합 PDF · 45p"), `pdf/resume-2026.pdf`, `assets/img/og-card.png`는 예전 내용.
