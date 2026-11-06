@@ -2,7 +2,8 @@
 
 > 사회·경제 도메인 이해를 기반으로 LLM 엔지니어링을 결합해,
 > 기획부터 개발·배포·운영까지 **1인 체계로 AI 제품과 데이터 도구를 만듭니다**.
-> 공개한 5개 프로젝트는 **바이브 코딩**으로 직접 설계하고 검증한 작업입니다.
+> 공개한 6개 프로젝트는 **바이브 코딩**으로 직접 설계하고 검증한 작업이며,
+> 현재는 예·적금 비교·관리 서비스 **에셋헷지**를 운영하고 있습니다.
 
 **🔗 포트폴리오 보기 → [https://stockhedge.github.io/portfolio/](https://stockhedge.github.io/portfolio/)**
 
@@ -21,9 +22,9 @@
 
 | 누적 코드 | 커밋 | 자동 테스트 | 공개 프로젝트 |
 |---:|---:|---:|---:|
-| **133,250줄** | **718건** | **1,222건** | **5개** |
+| **210,210줄** | **1,114건** | **3,569건** | **6개** |
 
-Python · TypeScript 기준. 공개한 5개 프로젝트 저장소 기준입니다. 수치는 개발 이력에서 계측한 누적값이며 현재 운영 기능 수를 뜻하지 않습니다.
+Python · TypeScript 기준. 공개한 6개 프로젝트 저장소 기준이며, 에셋헷지와 FinPle은 2026-11-06에 다시 계측했습니다. 수치는 개발 이력에서 계측한 누적값이며 현재 운영 기능 수를 뜻하지 않습니다.
 
 ---
 
@@ -67,7 +68,19 @@ AI가 만든 코드는 "있는 코드"만 검토됩니다. **코드 리뷰는 �
 
 ## 주요 프로젝트
 
-### 01. AIWebbuilder — 운영 중인 AI 웹사이트 제작 서비스
+### 01. 에셋헷지 — 예·적금 비교·관리 서비스
+`2026.08 — 현재 · 2026.10 정식 출시` · 기획 · 데이터 수집 · 개발 · 운영 단독
+
+광고에 표시된 최고 금리가 아니라 **실제로 받게 될 세후 금리**로 예·적금을 비교하는 웹 서비스.
+금융기관 2,162곳의 상품 24,095건을 같은 총액·같은 기간 기준으로 비교하고,
+가입한 상품의 납입·만기·목표 자금을 날짜 기준으로 관리합니다.
+금리 계산은 LLM 없이 결정적으로 동작하는 순수 함수이며, 금융 규칙을 어기는 변경은 출시 게이트에서 막힙니다.
+
+- **37,844줄** · 커밋 139건 · 테스트 979건(단위 688 · DB 291) · 운영 중
+- Next.js 16 · TypeScript · Neon PostgreSQL(FORCE RLS) · Drizzle ORM · Vercel · Cloudflare Workers · 카카오 로그인
+- 🔗 [운영 서비스](https://assethedge.stockhedge.kr/) · [상세 포트폴리오](https://stockhedge.github.io/portfolio/assethedge.html)
+
+### 02. AIWebbuilder — 운영 중인 AI 웹사이트 제작 서비스
 `2026.05 출시 · 현재 운영 재개` · 기획 · 백엔드 · 프론트 · 앱 · 인프라 · 결제 구현
 
 AI 웹빌더 제품을 기획하고 풀스택으로 구현했습니다. 현재 서비스 주소는
@@ -77,18 +90,18 @@ AI 웹빌더 제품을 기획하고 풀스택으로 구현했습니다. 현재 �
 - 이전 Display 빌드의 보존 사례 3개는 [샘플 갤러리](https://aiwebbuilder-display.pages.dev/explore)에서 별도로 확인 가능
 - 🔗 [운영 서비스](https://aiwebbuilder.kr/) · [상세 포트폴리오](https://stockhedge.github.io/portfolio/aiwebbuilder.html)
 
-### 02. FinPle — 청소년 모의투자 플랫폼
-`2026.03 — 2026.08` · 기획 · 백엔드 · 앱 · 인프라 · QA 단독
+### 03. FinPle — 청소년 모의투자 플랫폼
+`2026.03 — 현재 · Google Play 출시 심사 중` · 기획 · 백엔드 · 앱 · 인프라 · QA 단독
 
 만 14세 이상 청소년이 실제 돈을 잃지 않고 투자를 배우는 모의투자·금융교육 앱.
-교육 트리를 통과해야 거래가 열리고, 체결은 실제 KRX 2,770개 종목의 시세로 돌아갑니다.
+교육 트리를 통과할수록 투자 한도가 열리고, 체결은 실제 KRX 2,870개 종목의 시세로 돌아갑니다.
 수익률이 아니라 **투자 습관**을 보상하도록 미션을 재설계했습니다.
 
-- **29,714줄** · API 80개 · pytest 195 PASS · 화면 25개
+- **68,830줄** · API 106개 · pytest 1,563 PASS · 화면 28개
 - FastAPI · Expo · Neon PostgreSQL · Fly.io · Redis · KIS Open API
 - 🔗 [상세 포트폴리오](https://stockhedge.github.io/portfolio/finple.html)
 
-### 03. 06RAG — 사내 문서 RAG 시스템
+### 04. 06RAG — 사내 문서 RAG 시스템
 `2026.07` · 민트투자자문 사내 시스템 · 설계 · 구현 · 배포 단독
 
 공모주·IPO 업무 문서(락업 해제일·배정내역·펀드 보유·거래내역)에 자연어로 물으면
@@ -104,12 +117,12 @@ AI 웹빌더 제품을 기획하고 풀스택으로 구현했습니다. 현재 �
   자격증명 유출 **4층 방어**(색인 제외·청크 레닥션·OCR 캐시 마스킹·감사 로그 컬럼 게이트)
 - 🔗 [상세 포트폴리오](https://stockhedge.github.io/portfolio/06rag.html) · 저장소 private
 
-### 04·05. AI 베타테스터 · 커뮤니티 다이제스트
+### 05·06. AI 베타테스터 · 커뮤니티 다이제스트
 `2026` · 기획 · 설계 · 구현 · 운영 단독
 
 출시 전에 사람 대신 **사람처럼** 써보는 QA 에이전트. 페르소나 20명이 에뮬레이터와 브라우저에서
 제품을 직접 조작하고 근거가 붙은 채점 리포트를 만듭니다. 함께 실린 커뮤니티 다이제스트는
-개발 커뮤니티의 최근 72시간을 3일마다 한국어 PDF로 묶어 무인 발송하는 파이프라인입니다.
+개발 커뮤니티의 최근 72시간을 3일마다 한국어 PDF로 묶어 무인 발송하던 파이프라인으로, 2026년 10월 운영을 종료했습니다.
 
 - **10,232줄** · 실제 테스트 런 47회 · 페르소나 20명 · 세션 원가 $0.11–0.16
 - Next.js 16 · React 19 · Supabase · Playwright · Android adb · GitHub Actions
@@ -124,14 +137,14 @@ AI 웹빌더 제품을 기획하고 풀스택으로 구현했습니다. 현재 �
 | 영역 | 내용 |
 |---|---|
 | **AI · LLM** | 프롬프트 엔지니어링 · 에이전트 오케스트레이션 · 컨텍스트 설계 · Anthropic SDK · Gemini API · 멀티에이전트 파이프라인 · 프롬프트 캐싱 · 토큰/비용 계측 · 루브릭/페르소나 설계 · 인젝션 방어 · 모델 라우팅 |
-| **백엔드** | Python 3.11 · FastAPI · SQLAlchemy 2.0 async · Alembic · Pydantic v2 · asyncpg · httpx · Pillow · ffmpeg |
+| **백엔드** | Python 3.11 · FastAPI · SQLAlchemy 2.0 async · Alembic · Pydantic v2 · asyncpg · httpx · Drizzle ORM · Pillow · ffmpeg |
 | **프론트엔드** | TypeScript strict · React 18/19 · Next.js 16 App Router · Vite · TanStack Query · Zustand · Tailwind CSS 4 · Zod · i18n 5개 언어 · WCAG AA |
 | **모바일** | Expo SDK 57 · expo-router · React Native · Android adb 제어 |
 | **데이터** | PostgreSQL · Neon · Supabase(RLS) · Upstash Redis · Cloudflare R2 · 마이그레이션 설계 · credit ledger 원장 |
 | **인프라 · 운영** | Fly.io · Cloudflare Pages/Workers · Vercel · Docker · GitHub Actions CI/cron · Sentry · 시크릿 회전 · scale-to-zero |
 | **테스트 · 품질** | pytest · vitest · Playwright E2E · ruff · mypy · CI 게이트(머지 차단) · 회귀 테스트 설계 |
 | **연동 · 결제** | OAuth 2.0(Kakao·Google) · refresh token 회전 · KakaoPay 단건/정기 · Creem MoR · 웹훅 HMAC 검증 · 멱등성 키 · KIS Open API · robots.txt 준수 |
-| **도메인** | 금융 · 퀀트 · 모의투자 체결 엔진 · 증시 규칙(수수료·거래세·슬리피지) · SaaS 원가/단가 설계 · 전환 어트리뷰션 · 청소년 보호 컴플라이언스 |
+| **도메인** | 금융 · 퀀트 · 모의투자 체결 엔진 · 증시 규칙(수수료·거래세·슬리피지) · 예·적금 세후 실수령 계산 · SaaS 원가/단가 설계 · 전환 어트리뷰션 · 청소년 보호 컴플라이언스 |
 
 ---
 
@@ -139,7 +152,7 @@ AI 웹빌더 제품을 기획하고 풀스택으로 구현했습니다. 현재 �
 
 | | | |
 |---|---|---:|
-| **StockHedge** — 대표 · 1인 스타트업 | AI 웹빌더 제품 기획·개발·운영 · 현재 aiwebbuilder.kr 운영 중 | 2025.08 — 현재 |
+| **StockHedge** — 대표 · 1인 스타트업 | 에셋헷지 · AI 웹빌더 기획·개발·운영 · FinPle 출시 준비 | 2025.08 — 현재 |
 | **민트투자자문** — AI Transformation | 사내 통합 플랫폼 엔드투엔드 설계 및 LLM 엔지니어링<br>(인턴 2026.04–2026.07 · 프리랜서 2026.07–현재) | 2026.04 — 현재 |
 | **토스페이** — Onboarding Operational Assistant | 가맹점 온보딩 운영 프로세스 지원 및 BD 업무 | 2025.06 — 2025.08 |
 | **광교1동 상권 활성화 프로젝트** — 기획/총괄 | 상권 데이터 분석 기반 실행안 수립 및 이해관계자 조율 | 2025.09 — 2025.12 |
