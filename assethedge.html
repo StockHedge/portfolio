@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      에셋헷지 — 진짜 받을 금리로 고르는 예·적금 | 강지호 포트폴리오
+    </title>
+    <meta
+      name="description"
+      content="예·적금을 세후 실수령 금리로 비교하고 가입한 상품의 납입·만기·목표 자금을 관리하는 웹 서비스 에셋헷지. 기획부터 데이터 수집·개발·운영까지 1인 개발."
+    />
+    <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="icon"
+      href="assets/img/favicon-32.png"
+      sizes="32x32"
+      type="image/png"
+    />
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+    <link
+      rel="canonical"
+      href="https://stockhedge.github.io/portfolio/assethedge.html"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="강지호 포트폴리오" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta
+      property="og:url"
+      content="https://stockhedge.github.io/portfolio/assethedge.html"
+    />
+    <meta
+      property="og:title"
+      content="에셋헷지 — 진짜 받을 금리로 고르는 예·적금 | 강지호"
+    />
+    <meta
+      property="og:description"
+      content="금융기관 2,162곳의 예·적금 24,095건을 세후 실수령 금리로 비교하는 서비스. 2026년 10월 정식 출시, 운영 중."
+    />
+    <meta
+      property="og:image"
+      content="https://stockhedge.github.io/portfolio/assets/assethedge/home.webp"
+    />
+    <meta
+      property="og:image:alt"
+      content="에셋헷지 첫 화면 — 예금 실수령 금리 분포."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#111311" />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="assets/fonts/Pretendard-400.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="assets/fonts/Pretendard-700.woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="assets/css/shell.css" />
+    <style>
+      /* ─────────────────────────────────────────────────────────────
+   TOKENS
+   근거: AssetHedge 저장소 app/globals.css 라이트 팔레트.
+   대비(WCAG): text #111 on #f3f3f5 18.1:1 · secondary #55565e 6.58:1 ·
+   muted #6c6d77 4.63:1 · accent #3259ff 4.73:1 · accent-ink #2445d6 on soft 6.21:1
+   시그니처는 서비스의 "금리 격차 바" — 받는 구간은 브랜드색, 못 받는 구간은 무채색 빗금.
+   ───────────────────────────────────────────────────────────── */
+      :root {
+        --ah-bg: #f3f3f5;
+        --ah-surface: #ffffff;
+        --ah-surface-2: #f8f9fb;
+        --ah-border: #e8e8ec;
+        --ah-ink: #111111;
+        --ah-ink-2: #55565e;
+        --ah-muted: #6c6d77;
+        --ah-accent: #3259ff;
+        --ah-accent-hover: #2445d6;
+        --ah-accent-soft: #e8edff;
+        --ah-accent-ink: #2445d6;
+        --ah-gap: #a8a9b4;
+        --ah-track: #ebebf0;
+        --ah-night: #111311;
+        --ah-night-2: #1a1d1a;
+        --ah-night-line: rgba(251, 249, 246, 0.14);
+        --ah-night-ink: #fbf9f6;
+        --ah-night-ink-2: rgba(251, 249, 246, 0.68);
+
+        --s1: 4px;
+        --s2: 8px;
+        --s3: 12px;
+        --s4: 16px;
+        --s5: 24px;
+        --s6: 32px;
+        --s7: 48px;
+        --s8: 64px;
+        --s9: 96px;
+        --r-md: 14px;
+        --r-lg: 20px;
+        --shell: 1200px;
+        --gutter: clamp(20px, 5vw, 64px);
+        --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+        --elev: 0 4px 20px rgb(17 17 17 / 0.03), 0 1px 2px rgb(17 17 17 / 0.02);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--ah-bg);
+        color: var(--ah-ink);
+        font-family: var(--pf-sans);
+        font-size: 16px;
+        line-height: 1.62;
+        letter-spacing: -0.011em;
+        -webkit-font-smoothing: antialiased;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      :where(h1, h2, h3, h4, p, ul, ol, dl, dd, figure) {
+        margin: 0;
+      }
+      ul {
+        padding: 0;
+        list-style: none;
+      }
+      a {
+        color: var(--ah-accent-ink);
+        text-underline-offset: 3px;
+      }
+      a:focus-visible {
+        outline: 2px solid var(--ah-accent);
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+      .num {
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum" 1;
+      }
+
+      .shell {
+        max-width: var(--shell);
+        margin-inline: auto;
+        padding-inline: var(--gutter);
+      }
+      .band {
+        padding-block: clamp(56px, 7vw, var(--s9));
+      }
+      .band--white {
+        background: var(--ah-surface);
+      }
+      .band--night {
+        background: var(--ah-night);
+        color: var(--ah-night-ink);
+      }
+      .band-head {
+        max-width: 62ch;
+        margin-bottom: clamp(28px, 4vw, var(--s7));
+      }
+      .eyebrow {
+        display: block;
+        margin-bottom: var(--s3);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ah-accent-ink);
+      }
+      .band--night .eyebrow {
+        color: #9cb1ff;
+      }
+      .h2 {
+        font-size: clamp(1.75rem, 1.15rem + 2.1vw, 2.75rem);
+        line-height: 1.16;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+      }
+      .lead {
+        margin-top: var(--s4);
+        font-size: clamp(1.0625rem, 0.98rem + 0.35vw, 1.1875rem);
+        line-height: 1.66;
+        color: var(--ah-ink-2);
+      }
+      .band--night .lead {
+        color: var(--ah-night-ink-2);
+      }
+
+      /* ═══════════════ HERO ═══════════════ */
+      .hero {
+        padding-block: clamp(48px, 7vw, 104px) clamp(48px, 6vw, 80px);
+      }
+      .hero__grid {
+        display: grid;
+        gap: clamp(36px, 5vw, 64px);
+        grid-template-columns: minmax(0, 1fr);
+      }
+      @media (min-width: 1000px) {
+        .hero__grid {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+          align-items: center;
+        }
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: var(--s5);
+      }
+      .brand__mark {
+        inline-size: 32px;
+        block-size: 32px;
+        border-radius: 8px;
+        background: var(--ah-accent);
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+      .brand__mark svg {
+        inline-size: 18px;
+        block-size: 18px;
+      }
+      .brand b {
+        font-size: 1.125rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      .brand span {
+        font-size: 0.8125rem;
+        color: var(--ah-muted);
+      }
+      .hero h1 {
+        font-size: clamp(2.25rem, 1.4rem + 3.2vw, 3.5rem);
+        line-height: 1.12;
+        font-weight: 800;
+        letter-spacing: -0.05em;
+        /* 한글 제목이 낱자 단위로 끊기지 않게 어절 단위로만 줄을 바꾼다 */
+        word-break: keep-all;
+      }
+      .hero h1 em {
+        display: block;
+        margin-top: var(--s3);
+        font-style: normal;
+        font-size: 0.5em;
+        line-height: 1.3;
+        letter-spacing: -0.035em;
+        color: var(--ah-accent);
+      }
+      .hero__lead {
+        margin-top: var(--s5);
+        max-width: 46ch;
+        font-size: 1.0625rem;
+        line-height: 1.7;
+        color: var(--ah-ink-2);
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s3);
+        margin-top: var(--s6);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        min-block-size: 48px;
+        padding: 0 20px;
+        border-radius: 999px;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        text-decoration: none;
+        border: 1px solid var(--ah-accent);
+        transition:
+          background-color 0.16s var(--ease),
+          color 0.16s var(--ease);
+      }
+      .btn--solid {
+        background: var(--ah-accent);
+        color: #fff;
+      }
+      .btn--solid:hover {
+        background: var(--ah-accent-hover);
+      }
+      .btn--quiet {
+        background: var(--ah-surface);
+        color: var(--ah-ink);
+        border-color: var(--ah-border);
+      }
+      .btn--quiet:hover {
+        border-color: var(--ah-ink);
+      }
+      .hero__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s3) var(--s6);
+        margin-top: var(--s6);
+        padding-top: var(--s5);
+        border-top: 1px solid var(--ah-border);
+      }
+      .hero__meta dt {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--ah-muted);
+      }
+      .hero__meta dd {
+        font-size: 0.9375rem;
+        font-weight: 700;
+      }
+      .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .live::before {
+        content: "";
+        inline-size: 8px;
+        block-size: 8px;
+        border-radius: 50%;
+        background: #0f7a4a;
+      }
+      .shot {
+        border-radius: var(--r-lg);
+        overflow: hidden;
+        background: var(--ah-surface);
+        border: 1px solid var(--ah-border);
+        box-shadow: var(--elev);
+      }
+      .shot figcaption {
+        padding: var(--s3) var(--s4);
+        font-size: 0.8125rem;
+        color: var(--ah-muted);
+        border-top: 1px solid var(--ah-border);
+      }
+
+      /* ═══════════════ 지표 띠 ═══════════════ */
+      .strip {
+        background: var(--ah-surface);
+        border-block: 1px solid var(--ah-border);
+      }
+      .strip ul {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+      .strip li {
+        padding: var(--s5) var(--s4);
+        border-inline-start: 1px solid var(--ah-border);
+      }
+      .strip li:first-child {
+        border-inline-start: 0;
+      }
+      .strip b {
+        display: block;
+        font-size: clamp(1.375rem, 1.1rem + 1vw, 1.875rem);
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        line-height: 1.1;
+      }
+      .strip b small {
+        font-size: 0.55em;
+        font-weight: 700;
+        margin-inline-start: 2px;
+      }
+      .strip span {
+        display: block;
+        margin-top: 6px;
+        font-size: 0.8125rem;
+        color: var(--ah-muted);
+      }
+      @media (max-width: 640px) {
+        .strip ul {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .strip li:nth-child(odd) {
+          border-inline-start: 0;
+        }
+        .strip li {
+          border-top: 1px solid var(--ah-border);
+        }
+        .strip li:nth-child(-n + 2) {
+          border-top: 0;
+        }
+      }
+
+      /* ═══════════════ 두 가지 착시 — 금리 격차 바 ═══════════════ */
+      .illusions {
+        display: grid;
+        gap: var(--s4);
+        grid-template-columns: minmax(0, 1fr);
+      }
+      @media (min-width: 900px) {
+        .illusions {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      .illusion {
+        padding: clamp(20px, 2.6vw, var(--s6));
+        border-radius: var(--r-lg);
+        background: var(--ah-surface);
+        border: 1px solid var(--ah-border);
+        box-shadow: var(--elev);
+      }
+      .illusion__n {
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        color: var(--ah-accent-ink);
+      }
+      .illusion h3 {
+        margin-top: var(--s2);
+        font-size: 1.3125rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.35;
+      }
+      .illusion > p {
+        margin-top: var(--s3);
+        color: var(--ah-ink-2);
+        font-size: 0.9688rem;
+        line-height: 1.7;
+      }
+      .illusion > p b {
+        color: var(--ah-ink);
+      }
+      .bars {
+        margin-top: var(--s5);
+        display: grid;
+        gap: var(--s4);
+      }
+      .bar__label {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--s3);
+        font-size: 0.875rem;
+        margin-bottom: 6px;
+      }
+      .bar__label b {
+        font-weight: 700;
+      }
+      .bar__label span {
+        color: var(--ah-muted);
+      }
+      .bar__track {
+        display: flex;
+        block-size: 14px;
+        border-radius: 999px;
+        background: var(--ah-track);
+        overflow: hidden;
+      }
+      .bar__real {
+        background: var(--ah-accent);
+      }
+      .bar__gap {
+        background: repeating-linear-gradient(
+          135deg,
+          var(--ah-gap) 0 2px,
+          transparent 2px 6px
+        );
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s2) var(--s5);
+        margin-top: var(--s4);
+        font-size: 0.8125rem;
+        color: var(--ah-muted);
+      }
+      .legend i {
+        display: inline-block;
+        inline-size: 14px;
+        block-size: 10px;
+        border-radius: 3px;
+        margin-inline-end: 6px;
+        vertical-align: -1px;
+      }
+      .legend .k-real {
+        background: var(--ah-accent);
+      }
+      .legend .k-gap {
+        background: repeating-linear-gradient(
+          135deg,
+          var(--ah-gap) 0 2px,
+          transparent 2px 6px
+        );
+        box-shadow: inset 0 0 0 1px var(--ah-gap);
+      }
+
+      /* ═══════════════ 화면 ═══════════════ */
+      .screens {
+        display: grid;
+        gap: clamp(20px, 3vw, var(--s6));
+        grid-template-columns: minmax(0, 1fr);
+      }
+      @media (min-width: 900px) {
+        .screens {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      .screens figcaption {
+        padding: var(--s4);
+      }
+      .screens h3 {
+        font-size: 1.0625rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--ah-ink);
+      }
+      .screens p {
+        margin-top: 6px;
+        font-size: 0.9063rem;
+        line-height: 1.62;
+        color: var(--ah-ink-2);
+      }
+
+      /* ═══════════════ 핵심 구현 ═══════════════ */
+      .cards {
+        display: grid;
+        gap: var(--s4);
+        grid-template-columns: minmax(0, 1fr);
+      }
+      @media (min-width: 760px) {
+        .cards {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      .card {
+        padding: clamp(20px, 2.4vw, var(--s6));
+        border-radius: var(--r-md);
+        background: var(--ah-surface-2);
+        border: 1px solid var(--ah-border);
+      }
+      .card__n {
+        font-size: 0.6875rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        color: var(--ah-accent-ink);
+      }
+      .card h3 {
+        margin-top: var(--s2);
+        font-size: 1.1875rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        line-height: 1.35;
+      }
+      .card p {
+        margin-top: var(--s3);
+        font-size: 0.9375rem;
+        line-height: 1.7;
+        color: var(--ah-ink-2);
+      }
+      .card p b {
+        color: var(--ah-ink);
+      }
+      .card dl {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s2) var(--s5);
+        margin-top: var(--s4);
+        padding-top: var(--s3);
+        border-top: 1px solid var(--ah-border);
+      }
+      .card dt {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: var(--ah-muted);
+      }
+      .card dd {
+        font-size: 0.9375rem;
+        font-weight: 700;
+      }
+      code {
+        font-family: var(--pf-mono);
+        font-size: 0.8125em;
+        padding: 1px 5px;
+        border-radius: 5px;
+        background: var(--ah-accent-soft);
+        color: var(--ah-accent-ink);
+        overflow-wrap: anywhere;
+      }
+
+      /* ═══════════════ 검증 ═══════════════ */
+      .metrics {
+        display: grid;
+        gap: var(--s5) var(--s4);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      @media (min-width: 900px) {
+        .metrics {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+      .metric {
+        border-top: 1px solid var(--ah-night-line);
+        padding-top: var(--s4);
+      }
+      .metric b {
+        display: block;
+        font-size: clamp(2rem, 1.3rem + 2.4vw, 3rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        color: #fff;
+      }
+      .metric b em {
+        font-style: normal;
+        font-size: 0.4em;
+        font-weight: 700;
+        color: #9cb1ff;
+        margin-inline-start: 4px;
+      }
+      .metric span {
+        display: block;
+        margin-top: 8px;
+        font-size: 0.9375rem;
+        font-weight: 600;
+      }
+      .metric small {
+        display: block;
+        margin-top: 3px;
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--ah-night-ink-2);
+      }
+      .verify {
+        display: grid;
+        gap: var(--s4);
+        margin-top: clamp(32px, 4vw, var(--s7));
+        padding-top: var(--s5);
+        border-top: 1px solid var(--ah-night-line);
+      }
+      @media (min-width: 820px) {
+        .verify {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+      .verify span {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        color: #9a9d96;
+      }
+      .verify p {
+        font-size: 0.875rem;
+        line-height: 1.62;
+        color: var(--ah-night-ink-2);
+      }
+      .verify p b {
+        color: var(--ah-night-ink);
+        font-weight: 600;
+      }
+
+      /* ═══════════════ 하단 ═══════════════ */
+      .foot {
+        background: var(--ah-surface);
+        border-top: 1px solid var(--ah-border);
+      }
+      .foot__in {
+        padding-block: var(--s7);
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s5);
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+      .foot__links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s2) var(--s5);
+        font-size: 0.9375rem;
+        font-weight: 700;
+      }
+      .foot__note {
+        max-width: 56ch;
+        font-size: 0.8125rem;
+        line-height: 1.65;
+        color: var(--ah-muted);
+      }
+
+      /* ═══════════════ 움직임 ═══════════════ */
+      @media (prefers-reduced-motion: no-preference) {
+        .reveal {
+          opacity: 0;
+          transform: translateY(14px);
+          transition:
+            opacity 420ms var(--ease),
+            transform 420ms var(--ease);
+        }
+        .reveal.in {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @media print {
+        .reveal {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+        * {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="pf-nav" aria-label="포트폴리오 내비게이션">
+      <div class="pf-nav__in">
+        <a class="pf-nav__brand" href="index.html"
+          ><span class="pf-nav__mark" aria-hidden="true"></span>강지호&nbsp;<b
+            >Portfolio</b
+          ></a
+        >
+        <ul class="pf-nav__list">
+          <li><a href="index.html">프로필</a></li>
+          <li><a href="assethedge.html" aria-current="page">에셋헷지</a></li>
+          <li><a href="aiwebbuilder.html">AI 웹빌더</a></li>
+          <li><a href="finple.html">FinPle</a></li>
+          <li><a href="stockmate.html">스탁메이트</a></li>
+          <li><a href="06rag.html">06RAG</a></li>
+          <li><a href="ai-beta-tester.html">AI 베타테스터</a></li>
+        </ul>
+        <a class="pf-nav__cta" href="mailto:jihono55@gmail.com">연락하기</a>
+      </div>
+    </nav>
+
+    <main>
+      <!-- ══════════════════════════ HERO ══════════════════════════ -->
+      <header class="hero">
+        <div class="shell hero__grid">
+          <div>
+            <div class="brand">
+              <span class="brand__mark" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="2"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 3 3 8l9 5 9-5-9-5Z" />
+                  <path d="m3 12 9 5 9-5" />
+                  <path d="m3 16 9 5 9-5" />
+                </svg>
+              </span>
+              <div><b>에셋헷지</b> <span>AssetHedge</span></div>
+            </div>
+            <h1>
+              진짜 받을 금리로<br />고르는 예·적금<em
+                >예·적금 비교·관리 웹 서비스</em
+              >
+            </h1>
+            <p class="hero__lead">
+              광고 속 최고 금리가 아니라 세후에 실제로 받게 될 금액으로
+              예·적금을 비교하는 웹 서비스입니다. 가입한 상품의 납입·만기·목표
+              자금도 날짜 기준으로 관리할 수 있습니다. 공시 수집부터
+              개발·배포·운영까지 혼자 맡고 있습니다.
+            </p>
+            <div class="actions">
+              <a
+                class="btn btn--solid"
+                href="https://assethedge.stockhedge.kr/"
+                target="_blank"
+                rel="noopener"
+                >서비스 열기 ↗</a
+              >
+            </div>
+            <dl class="hero__meta">
+              <div>
+                <dt>기간</dt>
+                <dd class="num">2026.08 – 현재</dd>
+              </div>
+              <div>
+                <dt>역할</dt>
+                <dd>1인 개발 · 운영</dd>
+              </div>
+              <div>
+                <dt>상태</dt>
+                <dd>
+                  <span class="live">2026.10.26 정식 출시 · 운영 중</span>
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <figure class="shot">
+            <img
+              src="assets/assethedge/home.webp"
+              width="1600"
+              height="1000"
+              alt="에셋헷지 첫 화면 — 금융기관 2,162곳, 예·적금 24,095건과 예금 실수령 금리 분포 차트"
+              fetchpriority="high"
+            />
+            <figcaption>첫 화면 · 2026-11-06 공시 기준</figcaption>
+          </figure>
+        </div>
+      </header>
+
+      <!-- ══════════════════════════ 지표 띠 ══════════════════════════ -->
+      <section class="strip" aria-label="프로젝트 규모">
+        <ul class="shell">
+          <li>
+            <b class="num">2,162<small>곳</small></b
+            ><span>비교하는 금융기관</span>
+          </li>
+          <li>
+            <b class="num">24,095<small>건</small></b
+            ><span>예·적금 상품</span>
+          </li>
+          <li>
+            <b class="num">37,844<small>줄</small></b
+            ><span>TypeScript (테스트 제외)</span>
+          </li>
+          <li>
+            <b class="num">139<small>건</small></b
+            ><span>운영 브랜치 커밋</span>
+          </li>
+          <li>
+            <b class="num">979<small>건</small></b
+            ><span>자동 테스트 통과</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ══════════════════════════ 두 가지 착시 ══════════════════════════ -->
+      <section class="band" id="illusion">
+        <div class="shell">
+          <div class="band-head reveal">
+            <span class="eyebrow">Why</span>
+            <h2 class="h2">금리 표기의 두 가지 착시를 걷어낸다</h2>
+            <p class="lead">
+              예·적금 광고의 숫자는 틀리지 않았지만, 내가 받을 숫자도 아닙니다.
+              에셋헷지는 그 차이를 계산해서 보여 줍니다.
+            </p>
+          </div>
+
+          <div class="illusions">
+            <article class="illusion reveal">
+              <span class="illusion__n">01 · 우대금리 착시</span>
+              <h3>「최고 연 4.5%」는 조건을 다 채웠을 때의 숫자다</h3>
+              <p>
+                급여이체를 옮기고, 카드를 쓰고, 나이 조건까지 맞아야 최고 금리가
+                나온다. 예를 들어 이런 상품도
+                <b>자동으로 채워지는 조건만 계산하면 연 2.8%</b>다. 에셋헷지는
+                받을 수 있는 금리와 못 받는 금리를 나눠서 보여 준다.
+              </p>
+              <div class="bars" aria-hidden="true">
+                <div>
+                  <div class="bar__label">
+                    <b>자동 충족 조건만</b
+                    ><span class="num">연 2.8% / 최고 4.5%</span>
+                  </div>
+                  <div class="bar__track">
+                    <span class="bar__real" style="inline-size: 56%"></span
+                    ><span class="bar__gap" style="inline-size: 34%"></span>
+                  </div>
+                </div>
+              </div>
+              <p class="legend">
+                <span><i class="k-real"></i>실제로 받는 금리</span
+                ><span><i class="k-gap"></i>조건을 더 채워야 받는 금리</span>
+              </p>
+            </article>
+
+            <article class="illusion reveal">
+              <span class="illusion__n">02 · 적금 금리 착시</span>
+              <h3>연 10% 적금의 실제 수익률은 약 5.42%다</h3>
+              <p>
+                적금은 매달 나눠 넣기 때문에 돈이 머무는 평균 기간이 계약기간의 절반
+                남짓이다. 그래서
+                <b>연 10% 적금이 연 6% 예금보다 덜 번다</b>. 명목금리로 섞어
+                정렬하면 순위가 뒤집히므로, 같은 총액 기준으로 함께
+                비교한다.
+              </p>
+              <div class="bars" aria-hidden="true">
+                <div>
+                  <div class="bar__label">
+                    <b>연 10% 적금</b><span class="num">실제 약 5.42%</span>
+                  </div>
+                  <div class="bar__track">
+                    <span class="bar__real" style="inline-size: 54.2%"></span
+                    ><span class="bar__gap" style="inline-size: 45.8%"></span>
+                  </div>
+                </div>
+                <div>
+                  <div class="bar__label">
+                    <b>연 6% 예금</b><span class="num">실제 6.00%</span>
+                  </div>
+                  <div class="bar__track">
+                    <span class="bar__real" style="inline-size: 60%"></span>
+                  </div>
+                </div>
+              </div>
+              <p class="legend">
+                <span><i class="k-real"></i>실제 수익률</span
+                ><span><i class="k-gap"></i>표시 금리와의 차이</span>
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════ 화면 ══════════════════════════ -->
+      <section class="band band--white" id="screens">
+        <div class="shell">
+          <div class="band-head reveal">
+            <span class="eyebrow">Screens</span>
+            <h2 class="h2">실제 서비스 화면</h2>
+            <p class="lead">
+              상품 비교는 로그인 없이 바로 쓸 수 있고, 가입한 상품 관리는
+              카카오 로그인 후 열립니다.
+            </p>
+          </div>
+          <div class="screens">
+            <figure class="shot reveal">
+              <img
+                src="assets/assethedge/home.webp"
+                width="1600"
+                height="1000"
+                alt="에셋헷지 첫 화면 — 예금 실수령 금리 분포 차트와 중앙값 3.60%, 최고 7.00%"
+                loading="lazy"
+              />
+              <figcaption>
+                <h3>첫 화면 — 지금 예금 금리 지형</h3>
+                <p>
+                  12개월 예금의 실수령 금리 분포를 보여 줍니다. 가장 흔한 구간은
+                  연 3%대, 중앙값은 3.60%이고, 연 4%를 넘는 상품은 626건(전체의
+                  5.7%)뿐입니다.
+                </p>
+              </figcaption>
+            </figure>
+            <figure class="shot reveal">
+              <img
+                src="assets/assethedge/find.webp"
+                width="1600"
+                height="1000"
+                alt="예·적금 찾기 화면 — 상품 유형, 비교할 총액, 가입 기간 선택"
+                loading="lazy"
+              />
+              <figcaption>
+                <h3>예·적금 찾기 — 같은 총액, 같은 기간</h3>
+                <p>
+                  예금·적금·함께 비교 중에 고르고 총액과 기간을 정하면 세후
+                  수익 순으로 정렬합니다. 적금은 같은 총액을 매달 나눠 넣는
+                  기준으로 맞춥니다.
+                </p>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════ 핵심 구현 ══════════════════════════ -->
+      <section class="band" id="engineering">
+        <div class="shell">
+          <div class="band-head reveal">
+            <span class="eyebrow">Engineering</span>
+            <h2 class="h2">돈을 다루니까, 계산은 틀리지 않게</h2>
+            <p class="lead">
+              금리 계산·데이터 수집·개인정보·운영을 각각 따로 지켰습니다. 금융
+              규칙을 어기면 출시 자체를 막도록 저장소에 명문화했습니다.
+            </p>
+          </div>
+          <div class="cards">
+            <article class="card reveal">
+              <span class="card__n">01 · ENGINE</span>
+              <h3>결정적 금융 엔진</h3>
+              <p>
+                금리 계산은 순수 함수다. 입출력·현재 시각·LLM을 쓰지 않아
+                <b>같은 입력이면 늘 같은 답</b>이 나온다. 금액은 원 단위 정수,
+                금리는 문자열로 다뤄 소수점 오차가 끼어들 틈을 없앴다.
+              </p>
+              <p>
+                LLM은 우대조건 문장을 구조화하는 배치 작업에만 쓰고, 산수는
+                시키지 않는다.
+              </p>
+              <dl>
+                <div>
+                  <dt>금액</dt>
+                  <dd>원 단위 정수</dd>
+                </div>
+                <div>
+                  <dt>소수 연산</dt>
+                  <dd>금지</dd>
+                </div>
+                <div>
+                  <dt>미확인 값</dt>
+                  <dd>0으로 채우지 않음</dd>
+                </div>
+              </dl>
+            </article>
+            <article class="card reveal">
+              <span class="card__n">02 · DATA</span>
+              <h3>통합공시에 없는 상품까지 수집</h3>
+              <p>
+                금융감독원 통합공시에 신협·새마을금고 공시를 더해 조합·금고
+                단위까지 직접 모은다. 같은 새마을금고라도 12개월 정기예탁금이
+                <b>금고마다 연 2.70%~6.00%로 갈렸는데</b>, 이 정보는 금융감독원
+                통합공시에도 중앙회 공시에도 모여 있지 않았다.
+              </p>
+              <p>
+                비교용 상품 데이터는 정적 파일로 배포해, DB에 문제가 생겨도
+                비교 기능은 멈추지 않는다.
+              </p>
+              <dl>
+                <div>
+                  <dt>금융기관</dt>
+                  <dd class="num">2,162곳</dd>
+                </div>
+                <div>
+                  <dt>상품</dt>
+                  <dd class="num">24,095건</dd>
+                </div>
+              </dl>
+            </article>
+            <article class="card reveal">
+              <span class="card__n">03 · PRIVACY</span>
+              <h3>내 데이터는 나만 읽히게</h3>
+              <p>
+                가입한 상품과 납입 기록은 PostgreSQL
+                <b>행 단위 보안(FORCE RLS)</b>으로 본인 것만 읽힌다. 서비스가
+                쓰는 DB 역할과 관리 역할을 나눴고, 마이그레이션은 직접 쓴 SQL을
+                체크섬으로 확인하며 적용한다.
+              </p>
+              <p>
+                로그인은 카카오로만 받고, 개인정보 처리방침 변경도 시행일에 맞춰
+                자동으로 바뀌게 했다.
+              </p>
+              <dl>
+                <div>
+                  <dt>인증</dt>
+                  <dd>카카오 로그인</dd>
+                </div>
+                <div>
+                  <dt>DB</dt>
+                  <dd>Neon PostgreSQL</dd>
+                </div>
+              </dl>
+            </article>
+            <article class="card reveal">
+              <span class="card__n">04 · OPERATIONS</span>
+              <h3>운영자가 1명이어도 먼저 알려 주게</h3>
+              <p>
+                매일 백업하고, <b>매시간 상태를 확인</b>해 이상이 있으면
+                Discord로 알린다. 매일 오전 9시에는 운영 요약이 온다.
+                사람이 지켜보지 않아도 문제가 먼저 드러나게 만들었다.
+              </p>
+              <p>
+                배포는 Vercel, 감시는 Cloudflare Workers가 맡는다. 유료 CI 없이
+                로컬 검사 게이트로 출시를 판정한다.
+              </p>
+              <dl>
+                <div>
+                  <dt>백업</dt>
+                  <dd>매일</dd>
+                </div>
+                <div>
+                  <dt>상태 확인</dt>
+                  <dd>매시간</dd>
+                </div>
+                <div>
+                  <dt>운영 요약</dt>
+                  <dd>매일 09:00</dd>
+                </div>
+              </dl>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════ 검증 ══════════════════════════ -->
+      <section class="band band--night" id="quality">
+        <div class="shell">
+          <div class="band-head reveal">
+            <span class="eyebrow">Quality</span>
+            <h2 class="h2">출시 전에 통과한 것</h2>
+            <p class="lead">
+              2026-10-26 정식 출시 직전, 운영에 올라간 코드로 다시 확인한
+              결과입니다.
+            </p>
+          </div>
+          <div class="metrics reveal">
+            <div class="metric">
+              <b class="num">688<em>pass</em></b
+              ><span>단위 테스트</span
+              ><small>금리 계산·도메인 규칙 포함 전체</small>
+            </div>
+            <div class="metric">
+              <b class="num">291<em>pass</em></b
+              ><span>DB 테스트</span><small>실제 PostgreSQL에 붙여 실행</small>
+            </div>
+            <div class="metric">
+              <b class="num">9/9<em>ok</em></b
+              ><span>운영 점검</span
+              ><small>배포 직후 실제 주소로 핵심 경로 확인</small>
+            </div>
+            <div class="metric">
+              <b class="num">0<em>건</em></b
+              ><span>출시 시점 경보</span
+              ><small>감시 Worker 정시 실행·알림 수신 확인</small>
+            </div>
+          </div>
+          <div class="verify reveal">
+            <div>
+              <span>실제 사용자 여정</span>
+              <p>
+                스테이징에서
+                <b>카카오 로그인 → 상품 가입 등록 → 보고서 확인</b>까지 실제
+                계정으로 완주했다.
+              </p>
+            </div>
+            <div>
+              <span>출시 차단 규칙</span>
+              <p>
+                금융 규칙(소수 연산 금지, 미확인 값 0 처리 금지 등)을 어기는
+                변경은 <b>출시 게이트에서 막힌다</b>.
+              </p>
+            </div>
+            <div>
+              <span>확인 못 한 것</span>
+              <p>
+                법률·세무 외부 검토는 아직 받지 않았다. 예금성 상품을 팔거나
+                중개하지 않는 <b>비교·정보 제공 서비스</b>다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <div class="shell foot__in">
+        <div class="foot__links">
+          <a
+            href="https://assethedge.stockhedge.kr/"
+            target="_blank"
+            rel="noopener"
+            >에셋헷지 열기</a
+          >
+          <a href="https://stockhedge.kr/" target="_blank" rel="noopener"
+            >StockHedge 홈페이지</a
+          >
+        </div>
+        <p class="foot__note">
+          코드 규모·커밋은 2026-11-06 운영 브랜치 기준, 테스트 수는 2026-10-26
+          출시 게이트 기준입니다. 화면은 2026-11-06 공개 페이지 캡처입니다.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var els = document.querySelectorAll(".reveal");
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce || !("IntersectionObserver" in window)) {
+          els.forEach(function (el) {
+            el.classList.add("in");
+          });
+          return;
+        }
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (e) {
+              if (e.isIntersecting) {
+                e.target.classList.add("in");
+                io.unobserve(e.target);
+              }
+            });
+          },
+          { rootMargin: "0px 0px -8% 0px", threshold: 0.06 },
+        );
+        els.forEach(function (el) {
+          io.observe(el);
+        });
+        window.addEventListener("beforeprint", function () {
+          els.forEach(function (el) {
+            el.classList.add("in");
+          });
+        });
+      })();
+    </script>
+    <div class="pf-foot">
+      <div class="pf-foot__in">
+        <nav class="pf-pager" aria-label="프로젝트 이동">
+          <a href="index.html"
+            ><span class="pf-pager__k">← 이전</span
+            ><span class="pf-pager__v">강지호 — 개발자 프로필</span></a
+          >
+          <a class="is-next" href="aiwebbuilder.html"
+            ><span class="pf-pager__k">다음 →</span
+            ><span class="pf-pager__v">AIWebbuilder — AI 웹사이트 제작 서비스</span></a
+          >
+        </nav>
+        <div class="pf-foot__meta">
+          <span>© 2026 강지호 · Kang Ji Ho</span>
+          <a href="mailto:jihono55@gmail.com">jihono55@gmail.com</a>
+          <a href="https://github.com/StockHedge" target="_blank" rel="noopener"
+            >github.com/StockHedge</a
+          >
+          <span class="pf-sp">본문 수치는 저장소·운영 데이터 실측값입니다</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

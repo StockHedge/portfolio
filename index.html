@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>강지호 — AI Product Engineer | 강지호 포트폴리오</title>
-<meta name="description" content="AI Product Engineer · Solo Founder 강지호. 바이브 코딩(프롬프트 엔지니어링·컨텍스트 설계·에이전트 오케스트레이션)으로 5개 프로젝트를 기획부터 배포·운영까지 1인 수행. 누적 133,250 LOC · 718 커밋 · 1,222 테스트.">
+<meta name="description" content="AI Product Engineer · Solo Founder 강지호. AI 하네싱(프롬프트 엔지니어링·컨텍스트 설계·에이전트 오케스트레이션)으로 6개 프로젝트를 기획부터 배포·운영까지 1인 수행. 누적 210,210 LOC · 1,114 커밋 · 3,569 테스트.">
 <meta name="author" content="강지호">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
@@ -15,12 +15,12 @@
 <meta property="og:locale" content="ko_KR">
 <meta property="og:url" content="https://stockhedge.github.io/portfolio/">
 <meta property="og:title" content="강지호 — AI Product Engineer 포트폴리오">
-<meta property="og:description" content="바이브 코딩으로 만든 5개 프로젝트. 기획·개발·배포·운영을 1인 체계로 수행했습니다.">
+<meta property="og:description" content="AI 하네싱으로 개발한 6개 프로젝트. 기획·개발·배포·운영을 1인 체계로 수행했습니다.">
 <meta property="og:image" content="https://stockhedge.github.io/portfolio/assets/img/profile.jpg">
 <meta property="og:image:alt" content="강지호 프로필 사진.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="강지호 — AI Product Engineer 포트폴리오">
-<meta name="twitter:description" content="바이브 코딩으로 만든 5개 프로젝트. 기획·개발·배포·운영을 1인 체계로 수행했습니다.">
+<meta name="twitter:description" content="AI 하네싱으로 개발한 6개 프로젝트. 기획·개발·배포·운영을 1인 체계로 수행했습니다.">
 <meta name="twitter:image" content="https://stockhedge.github.io/portfolio/assets/img/profile.jpg">
 <meta name="theme-color" content="#111311">
 
@@ -235,7 +235,7 @@ a{color:inherit}
 .intro .lede b{font-weight:700; color:var(--ink); box-shadow:inset 0 -.5em 0 rgba(205,255,79,.5)}
 
 /* Focus 태그 — 원본 이력서에서는 좌측 패널에 있지만, 웹에서는 좌우 컬럼
-   높이가 같을 수 없어 레일이 700px 이상 길어졌다. 핵심 차별점(바이브 코딩)을
+   높이가 같을 수 없어 레일이 700px 이상 길어졌다. 핵심 차별점(AI 하네싱)을
    헤드라인 옆으로 올리는 편이 정보 구조상으로도 낫다.
    lime 은 크림 위 텍스트로 쓰면 1.5:1 이지만, 면으로 깔고 ink 를 얹으면 14.3:1 이다. */
 .focus{
@@ -272,7 +272,7 @@ a{color:inherit}
    연락 수단을 첫 화면 안에 둔다. 하단 CTA 와 중복이지만 위치가 다르다. */
 .hero-cta{display:flex; flex-wrap:wrap; gap:var(--s3); margin-top:clamp(28px,3.6vw,var(--s7))}
 
-/* ═══════════════ 시그니처: 바이브 코딩 ═══════════════ */
+/* ═══════════════ 시그니처: AI 하네싱 ═══════════════ */
 .vibe{background:var(--ink); color:var(--cream)}
 .vibe .label{color:var(--cream)}
 .vibe .label span{color:var(--mute-2)}
@@ -539,8 +539,10 @@ a{color:inherit}
     <a class="pf-nav__brand" href="index.html"><span class="pf-nav__mark" aria-hidden="true"></span>강지호&nbsp;<b>Portfolio</b></a>
     <ul class="pf-nav__list">
       <li><a href="index.html" aria-current="page">프로필</a></li>
+      <li><a href="assethedge.html">에셋헷지</a></li>
       <li><a href="aiwebbuilder.html">AI 웹빌더</a></li>
       <li><a href="finple.html">FinPle</a></li>
+      <li><a href="stockmate.html">스탁메이트</a></li>
       <li><a href="06rag.html">06RAG</a></li>
       <li><a href="ai-beta-tester.html">AI 베타테스터</a></li>
     </ul>
@@ -572,6 +574,7 @@ a{color:inherit}
         <div><dt>Email</dt><dd><a href="mailto:jihono55@gmail.com">jihono55@gmail.com</a></dd></div>
         <div><dt>Portfolio</dt><dd><a href="https://github.com/StockHedge/portfolio" target="_blank" rel="noopener">github.com/StockHedge/portfolio</a></dd></div>
         <div><dt>GitHub</dt><dd><a href="https://github.com/StockHedge" target="_blank" rel="noopener">github.com/StockHedge</a></dd></div>
+        <div><dt>Page</dt><dd><a href="https://stockhedge.kr/" target="_blank" rel="noopener">stockhedge.kr</a></dd></div>
         <div><dt>Base</dt><dd>경기도 화성시 동탄</dd></div>
       </dl>
     </div>
@@ -586,12 +589,14 @@ a{color:inherit}
     <p class="lede">
       사회·경제 도메인 이해를 기반으로 LLM 엔지니어링을 결합해,
       기획부터 개발·배포·운영까지 <b>1인 체계로 AI 제품과 데이터 도구를 만듭니다</b>.
-      공개한 5개 프로젝트는 <b>바이브 코딩</b>으로 직접 설계하고 검증한 작업입니다.
+      공개한 6개 프로젝트는 <b>AI 하네싱</b>을 통해 직접 설계하고 검증한 작업입니다.
+      현재는 예·적금 비교·관리 서비스 <b>에셋헷지</b>와 청소년 모의투자 앱 <b>핀플</b>을 운영하고 있습니다.
     </p>
 
     <ul class="focus">
-      <li class="is-key">바이브 코딩</li>
+      <li class="is-key">AI 하네싱</li>
       <li class="is-key">프롬프트 엔지니어링</li>
+      <li class="is-key">중앙 컨텍스트 관리</li>
       <li>AI Product</li>
       <li>LLM Engineering</li>
       <li>SaaS 운영</li>
@@ -602,22 +607,22 @@ a{color:inherit}
     <dl class="totals">
       <div>
         <dt>누적 코드</dt>
-        <dd class="num">133,250<small>줄</small></dd>
+        <dd class="num">210,210<small>줄</small></dd>
         <p class="fine">Python · TypeScript</p>
       </div>
       <div>
         <dt>커밋</dt>
-        <dd class="num">718<small>건</small></dd>
-        <p class="fine">5개 저장소</p>
+        <dd class="num">1,114<small>건</small></dd>
+        <p class="fine">6개 저장소</p>
       </div>
       <div>
         <dt>자동 테스트</dt>
-        <dd class="num">1,222<small>건</small></dd>
-        <p class="fine">CI 게이트 통과</p>
+        <dd class="num">3,569<small>건</small></dd>
+        <p class="fine">CI · 출시 게이트 통과</p>
       </div>
       <div>
         <dt>공개 프로젝트</dt>
-        <dd class="num">5<small>개</small></dd>
+        <dd class="num">6<small>개</small></dd>
         <p class="fine">기획 → 운영 단독</p>
       </div>
     </dl>
@@ -630,19 +635,19 @@ a{color:inherit}
   </div>
 </header>
 
-<!-- ═══════════════════════ 시그니처: 바이브 코딩 ═══════════════════════ -->
+<!-- ═══════════════════════ 시그니처: AI 하네싱 ═══════════════════════ -->
 <section class="band vibe" id="method">
   <div class="shell">
     <div class="sec-head reveal">
       <span class="label">Core Skill <span>핵심 역량</span></span>
     </div>
 
-    <h2 class="reveal">코드를 직접 치는 대신,<br><em>AI를 조종해서</em> 제품을 만듭니다.</h2>
+    <h2 class="reveal">AI를 <em>극한으로 하네싱</em>하여<br>제품을 개발하고 검증합니다.</h2>
     <p class="sub reveal">
-      바이브 코딩은 "AI에게 시켜서 대충 만든다"가 아닙니다.
+      AI를 활용한 개발은 "AI에게 시켜서 대충 만든다"가 아닙니다.
       모델이 무엇을 알고 무엇을 모르는지 설계하고, 어떤 판단을 어느 모델에 맡길지 라우팅하고,
       나온 산출물을 어떻게 반증할지 정하는 일입니다.
-      아래 다섯 가지는 제 프로젝트에서 실제로 쓴 방법과 그 근거가 된 수치입니다.
+      아래 여섯 가지는 제 프로젝트에서 실제로 쓴 방법과 그 근거가 된 수치입니다.
     </p>
 
     <div class="method">
@@ -698,22 +703,19 @@ a{color:inherit}
           그래서 명세와 산출물을 별도로 대조하는 단계를 두고, CI에 <b>실패를 무시하는 설정을
           두지 않습니다</b>. 통과한 것처럼 보이는 파이프라인이 가장 큰 리스크입니다.
         </p>
-        <span class="ev">테스트 1,222건 · CI 실패 시 머지 차단</span>
+        <span class="ev">테스트 3,569건 · 실패 시 머지 · 출시 차단</span>
       </article>
-    </div>
 
-    <div class="stance reveal">
-      <p>
-        측정하지 않은 판단은 남기지 않습니다. "프롬프트 캐싱이 이득인가"를 감으로 결정하는 대신
-        <b>cache_write는 입력 정가의 1.25배이므로 순낭비는 25% 프리미엄뿐, 건당 $0.022</b>까지
-        정량화하고 유지를 택했습니다. "더 싼 모델"이 정말 나은지도
-        <b>절감의 45%는 단가가 아니라 결과물이 28% 작아서</b>임을 분리 계측한 뒤에 판단을 보류했습니다.
-      </p>
-      <p>
-        AI로 빠르게 만드는 것과 <b>운영 가능한 상태로 만드는 것</b>은 다릅니다.
-        운영 DB를 날려본 적도, 무인 파이프라인이 토큰 만료로 조용히 죽는 것도 겪었습니다.
-        그 경험이 지금의 백업·멱등성·토큰 회전·실패 격리 설계로 남아 있습니다.
-      </p>
+      <article class="reveal">
+        <span class="n">06</span>
+        <h3>중앙 컨텍스트 관리</h3>
+        <p>
+          AI 도구와 기기가 바뀌어도 맥락이 끊기지 않도록 <b>Obsidian Vault 하나를 중앙 기록소</b>로 운영합니다.
+          프로젝트마다 100줄 이하의 인계 문서를 두고, 검증된 사건과 재사용할 교훈만 Vault로 승격하며,
+          공통 작업 규칙은 Vault 원본에서 Claude Code · Codex · Cursor 설정으로 배포합니다.
+        </p>
+        <span class="ev">Obsidian · 프로젝트 16개 · 재사용 패턴 37건</span>
+      </article>
     </div>
   </div>
 </section>
@@ -727,20 +729,46 @@ a{color:inherit}
 
     <div class="works">
 
-      <a class="work reveal" href="aiwebbuilder.html">
+      <a class="work reveal" href="assethedge.html">
         <div>
           <span class="work-no">PROJECT 01</span>
-          <h3>AIWebbuilder — AI 웹사이트 제작 제품<span class="arrow" aria-hidden="true">→</span></h3>
-          <p class="role">2026.05 출시 · 현재 운영 재개</p>
+          <h3>에셋헷지 — 예·적금 비교·관리 서비스<span class="arrow" aria-hidden="true">→</span></h3>
+          <p class="role">2026.08 — 현재 · 2026.10 정식 출시 · 기획 · 개발 · 운영 단독</p>
           <p>
-            AI 웹사이트 제작 서비스를 기획하고 풀스택으로 구현했습니다. 현재 aiwebbuilder.kr에서 운영 중이며,
+            광고에 표시된 최고 금리가 아니라 <b>실제로 받게 될 세후 금리</b>로 예·적금을 비교하는 웹 서비스.
+            금융기관 2,162곳의 상품 24,095건을 같은 총액·같은 기간 기준으로 비교하고,
+            가입한 상품의 납입·만기·목표 자금을 날짜 기준으로 관리합니다.
+          </p>
+          <ul class="work-tags">
+            <li>Next.js 16</li><li>TypeScript</li><li>Neon PostgreSQL</li>
+            <li>Vercel</li><li>Cloudflare Workers</li><li>카카오 로그인</li>
+          </ul>
+          <dl class="facts">
+            <div><dt>비교 상품</dt><dd class="num">24,095개</dd></div>
+            <div><dt>금융기관</dt><dd class="num">2,162곳</dd></div>
+            <div><dt>테스트</dt><dd class="num">979건</dd></div>
+            <div><dt>서비스 상태</dt><dd class="num">운영 중</dd></div>
+          </dl>
+        </div>
+        <div class="work-thumb">
+          <img src="assets/assethedge/home.webp" alt="에셋헷지 첫 화면 — 금융기관 2,162곳의 예·적금 24,095건과 예금 실수령 금리 분포" loading="lazy">
+        </div>
+      </a>
+
+      <a class="work reveal" href="aiwebbuilder.html">
+        <div>
+          <span class="work-no">PROJECT 02</span>
+          <h3>AIWebbuilder — AI 웹사이트 제작 제품<span class="arrow" aria-hidden="true">→</span></h3>
+          <p class="role">2026.05 출시 · 현재 피벗을 위해 일시 중단</p>
+          <p>
+            AI 웹사이트 제작 서비스를 기획하고 풀스택으로 구현했습니다. 현재는 피벗을 위해 서비스를 일시 중단했으며,
             개발 과정과 보존된 실제 생성 사례 3개를 함께 소개합니다.
           </p>
           <ul class="work-tags">
-            <li>React</li><li>TypeScript</li><li>FastAPI</li><li>Cloudflare</li><li>운영 중</li>
+            <li>React</li><li>TypeScript</li><li>FastAPI</li><li>Cloudflare</li><li>일시 중단</li>
           </ul>
           <dl class="facts">
-            <div><dt>서비스 상태</dt><dd class="num">운영 중</dd></div>
+            <div><dt>서비스 상태</dt><dd class="num">일시 중단</dd></div>
             <div><dt>서비스</dt><dd class="num">웹</dd></div>
             <div><dt>보존 사례</dt><dd class="num">3개</dd></div>
             <div><dt>담당</dt><dd class="num">단독</dd></div>
@@ -753,12 +781,12 @@ a{color:inherit}
 
       <a class="work reveal" href="finple.html">
         <div>
-          <span class="work-no">PROJECT 02</span>
+          <span class="work-no">PROJECT 03</span>
           <h3>FinPle — 청소년 모의투자 플랫폼<span class="arrow" aria-hidden="true">→</span></h3>
-          <p class="role">2026.03 — 2026.08 · 기획 · 백엔드 · 앱 · 인프라 · QA 단독</p>
+          <p class="role">2026.03 — 현재 · Google Play 출시 심사 중 · 기획 · 백엔드 · 앱 · 인프라 · QA 단독</p>
           <p>
             만 14세 이상 청소년이 실제 돈을 잃지 않고 투자를 배우는 모의투자·금융교육 앱.
-            교육 트리를 통과해야 거래가 열리고, 체결은 실제 KRX 2,770개 종목의 시세로 돌아갑니다.
+            교육 트리를 통과할수록 투자 한도가 열리고, 체결은 실제 KRX 2,870개 종목의 시세로 돌아갑니다.
             수익률이 아니라 투자 습관을 보상하도록 미션을 재설계했습니다.
           </p>
           <ul class="work-tags">
@@ -766,10 +794,10 @@ a{color:inherit}
             <li>Fly.io</li><li>Redis</li><li>KIS Open API</li>
           </ul>
           <dl class="facts">
-            <div><dt>코드</dt><dd class="num">29,714줄</dd></div>
-            <div><dt>API</dt><dd class="num">80개</dd></div>
-            <div><dt>테스트</dt><dd class="num">195 PASS</dd></div>
-            <div><dt>화면</dt><dd class="num">25개</dd></div>
+            <div><dt>코드</dt><dd class="num">68,830줄</dd></div>
+            <div><dt>API</dt><dd class="num">106개</dd></div>
+            <div><dt>테스트</dt><dd class="num">1,563 PASS</dd></div>
+            <div><dt>화면</dt><dd class="num">28개</dd></div>
           </dl>
         </div>
         <div class="work-thumb is-phone">
@@ -777,9 +805,35 @@ a{color:inherit}
         </div>
       </a>
 
+      <a class="work reveal" href="stockmate.html">
+        <div>
+          <span class="work-no">PROJECT 04</span>
+          <h3>스탁메이트 — KOSPI 종목 비교 서비스<span class="arrow" aria-hidden="true">→</span></h3>
+          <p class="role">2026.10 — 현재 · 출시 준비 중 · 기획 · 데이터 · 개발 단독</p>
+          <p>
+            투자 조건을 고르면 KOSPI 종목을 PER·PBR·ROE·부채비율·모멘텀 다섯 지표로 같은 업종 안에서 비교해
+            0~100점으로 보여 주는 서비스. 매주 토요일 TOP 5와 전체 순위를 고정된 발행본으로 공개하고,
+            지난주와의 변화와 제외 이유를 함께 기록합니다. 공시는 접수 다음 거래일부터 반영해
+            <b>미래 정보가 점수에 섞이지 않게</b> 했습니다.
+          </p>
+          <ul class="work-tags">
+            <li>Next.js 16</li><li>TypeScript</li><li>PostgreSQL</li><li>KRX · OpenDART</li><li>Vercel</li><li>출시 준비 중</li>
+          </ul>
+          <dl class="facts">
+            <div><dt>코드</dt><dd class="num">11,668줄</dd></div>
+            <div><dt>비교 지표</dt><dd class="num">5개</dd></div>
+            <div><dt>발행</dt><dd class="num">매주 토요일</dd></div>
+            <div><dt>서비스 상태</dt><dd class="num">출시 준비</dd></div>
+          </dl>
+        </div>
+        <div class="work-thumb">
+          <img src="assets/stockmate/home.webp" alt="스탁메이트 스테이징 첫 화면 — 투자 조건 선택과 지표 중요도" loading="lazy">
+        </div>
+      </a>
+
       <a class="work reveal" href="06rag.html">
         <div>
-          <span class="work-no">PROJECT 03</span>
+          <span class="work-no">PROJECT 05</span>
           <h3>06RAG — 사내 문서 RAG 시스템<span class="arrow" aria-hidden="true">→</span></h3>
           <p class="role">2026.07 · 민트투자자문 사내 시스템 · 설계 · 구현 · 배포 단독</p>
           <p>
@@ -805,14 +859,14 @@ a{color:inherit}
 
       <a class="work reveal" href="ai-beta-tester.html">
         <div>
-          <span class="work-no">PROJECT 04 · 05</span>
+          <span class="work-no">PROJECT 06 · 07</span>
           <h3>AI 베타테스터 · 커뮤니티 다이제스트<span class="arrow" aria-hidden="true">→</span></h3>
           <p class="role">2026 · 기획 · 설계 · 구현 · 운영 단독</p>
           <p>
             출시 전에 사람 대신 <b>사람처럼</b> 써보는 QA 에이전트. 페르소나 20명이 에뮬레이터와
             브라우저에서 제품을 직접 조작하고 근거가 붙은 채점 리포트를 만듭니다.
             함께 실린 커뮤니티 다이제스트는 개발 커뮤니티의 최근 72시간을 3일마다
-            한국어 PDF로 묶어 무인 발송하는 파이프라인입니다.
+            한국어 PDF로 묶어 무인 발송하던 파이프라인으로, 2026년 10월 운영을 종료했습니다.
           </p>
           <ul class="work-tags">
             <li>Next.js 16</li><li>React 19</li><li>Supabase</li>
@@ -848,6 +902,7 @@ a{color:inherit}
           <span class="is-key">프롬프트 엔지니어링</span>
           <span class="is-key">에이전트 오케스트레이션</span>
           <span class="is-key">컨텍스트 설계</span>
+          <span class="is-key">Obsidian 중앙 컨텍스트 관리</span>
           <span>Anthropic SDK</span><span>Gemini API</span>
           <span>멀티에이전트 파이프라인</span><span>프롬프트 캐싱</span>
           <span>토큰·비용 계측</span><span>루브릭 · 페르소나 설계</span>
@@ -859,7 +914,7 @@ a{color:inherit}
         <dd>
           <span class="is-key">Python 3.11</span><span class="is-key">FastAPI</span>
           <span>SQLAlchemy 2.0 async</span><span>Alembic</span><span>Pydantic v2</span>
-          <span>asyncpg</span><span>httpx</span><span>Celery-free 배치 설계</span>
+          <span>asyncpg</span><span>httpx</span><span>Drizzle ORM</span><span>Celery-free 배치 설계</span>
           <span>Pillow · ffmpeg</span>
         </dd>
       </div>
@@ -914,7 +969,7 @@ a{color:inherit}
         <dd>
           <span class="is-key">금융 · 퀀트</span><span>모의투자 체결 엔진</span>
           <span>증시 규칙 (수수료 · 거래세 · 슬리피지)</span>
-          <span>SaaS 원가 · 단가 설계</span><span>전환 어트리뷰션</span>
+          <span>예·적금 세후 실수령 계산</span><span>SaaS 원가 · 단가 설계</span><span>전환 어트리뷰션</span>
           <span>청소년 보호 · 컴플라이언스</span>
         </dd>
       </div>
@@ -934,7 +989,7 @@ a{color:inherit}
         <span class="i">01</span>
         <div>
           <h3>StockHedge — 대표 · 1인 스타트업</h3>
-          <p class="d">AI 웹빌더 기획·개발·운영 · 현재 aiwebbuilder.kr 운영 중</p>
+          <p class="d">에셋헷지 · FinPle 운영 · 스탁메이트 출시 준비 · AI 웹빌더 기획·개발</p>
         </div>
         <span class="when">2025.08 — 현재</span>
       </article>
@@ -1051,18 +1106,26 @@ a{color:inherit}
       <article class="row reveal">
         <span class="i">04</span>
         <div>
-          <h3><a href="https://aiwebbuilder.kr/" target="_blank" rel="noopener">AIWebbuilder — 운영 서비스</a></h3>
-          <p class="d">AI 웹사이트 제작 서비스 운영 중 · 개발 당시 샘플은 상세 포트폴리오에서 확인할 수 있습니다</p>
+          <h3><a href="https://assethedge.stockhedge.kr/" target="_blank" rel="noopener">에셋헷지 — 운영 서비스</a></h3>
+          <p class="d">예·적금 비교·관리 서비스 운영 중 · 상품 비교는 로그인 없이 이용할 수 있습니다</p>
         </div>
-        <span class="host">aiwebbuilder.kr</span>
+        <span class="host">assethedge.stockhedge.kr</span>
       </article>
       <article class="row reveal">
         <span class="i">05</span>
         <div>
-          <h3><a href="marketing-hub.html">마케팅 자동화 허브 — 기존 대시보드</a></h3>
-          <p class="d">Reference 링크에서 기존 공개 대시보드로 이동합니다</p>
+          <h3><a href="https://aiwebbuilder.kr/" target="_blank" rel="noopener">AIWebbuilder — 전시용 데모</a></h3>
+          <p class="d">피벗을 위해 서비스를 일시 중단했습니다 · 개발 당시 샘플은 상세 포트폴리오에서 확인할 수 있습니다</p>
         </div>
-        <span class="host">Cloudflare Pages</span>
+        <span class="host">aiwebbuilder.kr</span>
+      </article>
+      <article class="row reveal">
+        <span class="i">06</span>
+        <div>
+          <h3><a href="stockmate.html">스탁메이트(StockMate) — 출시 준비 중</a></h3>
+          <p class="d">KOSPI 종목 비교 서비스 · 스테이징 검증을 마치고 공개 출시를 준비하고 있습니다</p>
+        </div>
+        <span class="host">출시 예정</span>
       </article>
     </div>
 
@@ -1077,7 +1140,7 @@ a{color:inherit}
       이 포트폴리오의 모든 수치는 저장소와 운영 데이터베이스에서 직접 계측한 값입니다.
       코드 규모는 <span class="mono">git</span> 및 소스 집계, 파이프라인 비용·소요 시간은
       운영 테이블 실측치, 화면은 제품 개발·운영 당시 저장한 실제 캡처입니다.
-      누적 지표는 공개한 5개 프로젝트(AIWebbuilder · FinPle · 06RAG · AI 베타테스터 · 커뮤니티 다이제스트)의 저장소 기준 합계입니다. AIWebbuilder 수치는 개발 당시 이력이며 현재 전시 기능을 뜻하지 않습니다.
+      누적 지표는 공개한 6개 프로젝트(에셋헷지 · AIWebbuilder · FinPle · 06RAG · AI 베타테스터 · 커뮤니티 다이제스트)의 저장소 기준 합계이며, 에셋헷지와 FinPle은 2026-11-06에 다시 계측했습니다. 스탁메이트는 출시 전이라 누적 지표에서 제외했습니다. AIWebbuilder 수치는 개발 당시 이력이며 현재 전시 기능을 뜻하지 않습니다.
     </p>
   </div>
 </section>
@@ -1088,7 +1151,7 @@ a{color:inherit}
   <div class="pf-foot__in">
     <nav class="pf-pager" aria-label="프로젝트 이동">
       <a href="ai-beta-tester.html"><span class="pf-pager__k">← 이전</span><span class="pf-pager__v">AI 베타테스터 · 커뮤니티 다이제스트</span></a>
-      <a class="is-next" href="aiwebbuilder.html"><span class="pf-pager__k">다음 →</span><span class="pf-pager__v">AIWebbuilder — 운영 중</span></a>
+      <a class="is-next" href="assethedge.html"><span class="pf-pager__k">다음 →</span><span class="pf-pager__v">에셋헷지 — 예·적금 비교·관리 서비스</span></a>
     </nav>
     <div class="pf-foot__meta">
       <span>© 2026 강지호 · Kang Ji Ho</span>
